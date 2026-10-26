@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Sayali ✨ — A Universe Made For You</title>
+  <meta name="description" content="Happy Birthday, My Beautiful Sayali — Your personal birthday universe awaits.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { overflow-x: hidden; }
+
+    /* Hero */
+    .bday-hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+
+    .hero-nebula {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(42,26,110,0.6) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 50% at 15% 60%, rgba(139,58,122,0.3) 0%, transparent 55%),
+        radial-gradient(ellipse 35% 40% at 85% 70%, rgba(74,44,138,0.3) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem clamp(1.5rem, 4vw, 3rem);
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .hero-content { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
+      .hero-text .section-eyebrow { justify-content: center; }
+      .hero-photo-col { order: -1; }
+    }
+
+    .hero-tagline {
+      font-family: var(--font-script);
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: var(--champagne);
+      margin-bottom: 1.2rem;
+      animation: fadeInUp 1s ease both;
+      animation-delay: 0.3s;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 5.5vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 1s ease both;
+      animation-delay: 0.5s;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-elegant);
+      font-size: clamp(1rem, 1.8vw, 1.25rem);
+      color: var(--text-dim);
+      font-style: italic;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 1s ease both;
+      animation-delay: 0.7s;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      animation: fadeInUp 1s ease both;
+      animation-delay: 0.9s;
+    }
+
+    @media (max-width: 900px) { .hero-actions { justify-content: center; } }
+
+    /* Photo column */
+    .hero-photo-col {
+      position: relative;
+      animation: scaleIn 1.2s var(--ease-spring) both;
+      animation-delay: 0.4s;
+    }
+
+    .hero-photo-main {
+      position: relative;
+      border-radius: 2rem;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(212,169,74,0.2),
+        0 24px 80px rgba(0,0,0,0.6),
+        0 0 80px rgba(139,58,122,0.3);
+    }
+
+    .hero-photo-main img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-photo-main::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(to top, rgba(3,2,10,0.8), transparent);
+    }
+
+    .hero-photo-badge {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(3,2,10,0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(212,169,74,0.3);
+      border-radius: 3rem;
+      padding: 0.6rem 1.5rem;
+      font-family: var(--font-script);
+      font-size: 1.1rem;
+      color: var(--champagne);
+      z-index: 3;
+      white-space: nowrap;
+    }
+
+    /* Orbiting hearts */
+    .orbit-heart {
+      position: absolute;
+      font-size: 1.2rem;
+      animation: orbit 6s linear infinite;
+      transform-origin: center;
+    }
+
+    .orbit-heart:nth-child(2) { animation-duration: 9s; animation-direction: reverse; font-size: 0.9rem; }
+    .orbit-heart:nth-child(3) { animation-duration: 12s; font-size: 0.7rem; }
+
+    /* Birthday Cake Section */
+    .cake-section {
+      padding: 4rem 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .cake-container {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .cake-container:hover { transform: scale(1.05); }
+
+    .cake-emoji {
+      font-size: 5rem;
+      filter: drop-shadow(0 0 20px rgba(232,121,160,0.6));
+      animation: heartBeat 3s ease-in-out infinite;
+    }
+
+    .candles-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .candle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .candle-flame {
+      width: 10px;
+      height: 18px;
+      background: radial-gradient(ellipse at 50% 80%, #fff 0%, #ffe066 40%, #ff8c00 80%, transparent 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      filter: blur(1px);
+      animation: candleFlicker 0.3s ease-in-out infinite alternate;
+      transform-origin: bottom;
+    }
+
+    .candle.blown .candle-flame { display: none; }
+
+    @keyframes candleFlicker {
+      0%   { transform: scaleX(0.85) scaleY(1) rotate(-2deg); }
+      100% { transform: scaleX(1.1) scaleY(0.95) rotate(2deg); }
+    }
+
+    .candle-body {
+      width: 10px;
+      height: 40px;
+      border-radius: 3px;
+      background: linear-gradient(to bottom, #f4a7c0 0%, #e879a0 50%, #d06090 100%);
+    }
+
+    /* Navigation grid */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .nav-card {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.5rem 1.8rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 1.2rem;
+      text-decoration: none;
+      color: var(--ivory);
+      transition: all 0.4s var(--ease-cosmic);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .nav-card:hover {
+      background: rgba(74,44,138,0.4);
+      border-color: rgba(232,200,126,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(139,58,122,0.2);
+    }
+
+    .nav-card-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 8px rgba(232,121,160,0.5));
+    }
+
+    .nav-card-text h3 {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .nav-card-text p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: var(--font-sans);
+    }
+
+    /* Celebration animation */
+    .celebration-burst {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .celebration-burst.active { opacity: 1; }
+
+    .burst-text {
+      font-family: var(--font-script);
+      font-size: clamp(2rem, 8vw, 5rem);
+      color: var(--champagne);
+      text-align: center;
+      animation: scaleIn 0.5s var(--ease-spring) forwards;
+      text-shadow: 0 0 60px rgba(212,169,74,0.8);
+    }
+
+    /* Stats / love counter */
+    .love-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .love-stat {
+      text-align: center;
+    }
+
+    .love-stat .number {
+      font-family: var(--font-serif);
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: var(--grad-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    .love-stat .label {
+      font-family: var(--font-elegant);
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    @media (max-width: 600px) { .love-stats { gap: 2rem; } }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+
+<!-- Navigation -->
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Nav -->
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a>
+  <a href="our-story.html">Our Story</a>
+  <a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a>
+  <a href="letter.html">Letter</a>
+  <a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a>
+  <a href="forever.html">Forever</a>
+</nav>
+
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="lightbox">
+  <button class="lightbox-close">✕</button>
+  <button class="lightbox-prev">‹</button>
+  <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-next">›</button>
+</div>
+<div id="toast"></div>
+
+<div class="page-wrapper">
+  <!-- Nebula -->
+  <div class="hero-nebula"></div>
+
+  <!-- Hero -->
+  <section class="bday-hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <p class="section-eyebrow">21st October 2026</p>
+        <p class="hero-tagline">Happy Birthday,</p>
+        <h1 class="hero-title">My Beautiful <span class="text-gold">Sayali</span> ✨</h1>
+        <p class="hero-subtitle">
+          Every star in this universe shines a little brighter because you exist.
+          Today, the entire cosmos celebrates the most beautiful soul I know —
+          my wife, my love, my prettiest bebe.
+        </p>
+        <div class="hero-actions">
+          <a href="our-story.html" class="btn-cosmic"><span>✦ Our Story</span></a>
+          <a href="memories.html" class="btn-ghost">Memories</a>
+          <a href="gifts.html" class="btn-gold">Open Gifts 🎁</a>
+        </div>
+        <div class="love-stats reveal" style="margin-top:3rem; justify-content:flex-start; gap:2.5rem;">
+          <div class="love-stat">
+            <span class="number" id="days-count">0</span>
+            <span class="label">Days Together</span>
+          </div>
+          <div class="love-stat">
+            <span class="number">∞</span>
+            <span class="label">Reasons I Love You</span>
+          </div>
+          <div class="love-stat">
+            <span class="number">1</span>
+            <span class="label">You, Always</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-photo-col">
+        <div style="position:relative; display:inline-block; width:100%;">
+          <div class="hero-photo-main reveal-scale">
+            <img src="assets/images/sayali-star-queen.jpg" alt="Sayali — My Prettiest Bebe" loading="eager">
+            <div class="hero-photo-badge">My Prettiest Bebe 💛</div>
+          </div>
+          <!-- Floating orbs -->
+          <div class="orb orb-pink" style="width:200px;height:200px;top:-60px;right:-60px;animation-duration:7s;"></div>
+          <div class="orb orb-violet" style="width:150px;height:150px;bottom:-40px;left:-40px;animation-duration:9s;animation-delay:2s;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Birthday Cake -->
+  <section class="cake-section section">
+    <div class="container" style="text-align:center;">
+      <p class="section-eyebrow" style="justify-content:center;">Make a Wish</p>
+      <h2 class="section-title reveal"><span class="text-rose">Blow out the candles</span></h2>
+      <p class="section-subtitle reveal" style="margin:0 auto 3rem; text-align:center;">Click each candle to blow it out, then make a birthday wish 🌟</p>
+
+      <div class="candles-row" style="justify-content:center;" id="candles-row">
+        <!-- Candles injected by JS -->
+      </div>
+
+      <div class="cake-container" onclick="celebrateCake()">
+        <div class="cake-emoji">🎂</div>
+      </div>
+
+      <p id="wish-prompt" style="font-family:var(--font-script);font-size:1.4rem;color:var(--champagne);margin-top:1.5rem;opacity:0;transition:opacity 0.8s;">
+        Make a wish! ✨ Your dreams are written in the stars.
+      </p>
+    </div>
+  </section>
+
+  <!-- Explore Sections -->
+  <section class="section">
+    <div class="container">
+      <p class="section-eyebrow" style="justify-content:center;">Your Universe Awaits</p>
+      <h2 class="section-title reveal" style="text-align:center; margin-bottom:0.8rem;">
+        Explore <span class="text-nebula">Your Birthday Universe</span>
+      </h2>
+      <p class="section-subtitle reveal" style="text-align:center;margin:0 auto 3.5rem;">
+        Every page is a world built just for you, filled with love and magic.
+      </p>
+
+      <div class="nav-grid">
+        <a href="our-story.html" class="nav-card reveal" style="animation-delay:0.1s">
+          <div class="nav-card-icon">💫</div>
+          <div class="nav-card-text">
+            <h3>Start Our Journey</h3>
+            <p>Our story, beautifully told through time</p>
+          </div>
+        </a>
+        <a href="memories.html" class="nav-card reveal" style="animation-delay:0.2s">
+          <div class="nav-card-icon">🖼️</div>
+          <div class="nav-card-text">
+            <h3>Explore Our Memories</h3>
+            <p>A museum filled with our real photographs</p>
+          </div>
+        </a>
+        <a href="gifts.html" class="nav-card reveal" style="animation-delay:0.3s">
+          <div class="nav-card-icon">🎁</div>
+          <div class="nav-card-text">
+            <h3>Open a Surprise Gift</h3>
+            <p>Six magical gifts waiting to be discovered</p>
+          </div>
+        </a>
+        <a href="letter.html" class="nav-card reveal" style="animation-delay:0.4s">
+          <div class="nav-card-icon">💌</div>
+          <div class="nav-card-text">
+            <h3>Read My Letter</h3>
+            <p>Words from my heart, written only for you</p>
+          </div>
+        </a>
+        <a href="our-song.html" class="nav-card reveal" style="animation-delay:0.5s">
+          <div class="nav-card-icon">🎵</div>
+          <div class="nav-card-text">
+            <h3>Play Our Song</h3>
+            <p>The melody that belongs to us</p>
+          </div>
+        </a>
+        <a href="wishes.html" class="nav-card reveal" style="animation-delay:0.6s">
+          <div class="nav-card-icon">🌟</div>
+          <div class="nav-card-text">
+            <h3>Make a Wish</h3>
+            <p>A galaxy of birthday wishes for you</p>
+          </div>
+        </a>
+        <a href="forever.html" class="nav-card reveal" style="animation-delay:0.7s" style="grid-column: span 2;">
+          <div class="nav-card-icon">🌌</div>
+          <div class="nav-card-text">
+            <h3>Discover the Grand Finale</h3>
+            <p>The most beautiful moment of this universe</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="cosmic-footer">
+    <p>Made with <span class="heart">❤️</span> by Your Husband, for the most beautiful woman in my universe.</p>
+    <p style="margin-top:0.8rem;font-size:0.8rem;opacity:0.5;">Happy Birthday, Sayali — 21st October 2026</p>
+  </footer>
+</div>
+
+<!-- Celebration Burst -->
+<div class="celebration-burst" id="celebration-burst">
+  <div class="burst-text">🎉 Happy Birthday Sayali! 🎉</div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // Create candles
+  const candlesRow = document.getElementById('candles-row');
+  const candleColors = ['#e879a0','#d4a94a','#9b59b6','#e8c87e','#f4a7c0'];
+  let blownCount = 0;
+  const totalCandles = 5;
+
+  for (let i = 0; i < totalCandles; i++) {
+    const candle = document.createElement('div');
+    candle.className = 'candle';
+    candle.innerHTML = `
+      <div class="candle-flame"></div>
+      <div class="candle-body" style="background:linear-gradient(to bottom, ${candleColors[i]}, ${candleColors[(i+1)%candleColors.length]})"></div>
+    `;
+    candle.addEventListener('click', function() {
+      if (!this.classList.contains('blown')) {
+        this.classList.add('blown');
+        blownCount++;
+        if (blownCount === totalCandles) {
+          setTimeout(() => {
+            document.getElementById('wish-prompt').style.opacity = '1';
+            launchPetals();
+            showToast('🌟 Your wish has been sent to the stars!');
+          }, 300);
+        }
+      }
+    });
+    candlesRow.appendChild(candle);
+  }
+
+  // Calculate days together (placeholder — user can update the start date)
+  const startDate = new Date('2023-01-01'); // Edit this date
+  const today = new Date();
+  const diff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+  document.getElementById('days-count').textContent = diff > 0 ? diff.toLocaleString() : '∞';
+
+  function celebrateCake() {
+    const burst = document.getElementById('celebration-burst');
+    burst.classList.add('active');
+    launchPetals();
+    showToast('🎂 Happy Birthday, My Prettiest Bebe! 🎂', 5000);
+    setTimeout(() => burst.classList.remove('active'), 3000);
+  }
+</script>
+</body>
+</html>

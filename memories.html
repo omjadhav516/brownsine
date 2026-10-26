@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Museum — Sayali's Universe</title>
+  <meta name="description" content="A premium photo gallery — explore our beautiful memories together.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .museum-hero {
+      min-height: 45vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 3rem;
+      position: relative;
+    }
+
+    .museum-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(42,26,110,0.55) 0%, transparent 65%);
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .filter-btn {
+      padding: 0.55rem 1.4rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(212,169,74,0.25);
+      background: transparent;
+      color: var(--text-dim);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-cosmic);
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(212,169,74,0.12);
+      border-color: var(--champagne);
+      color: var(--champagne);
+    }
+
+    /* Masonry grid */
+    .masonry-grid {
+      columns: 3 280px;
+      column-gap: 1.2rem;
+    }
+
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 1.2rem;
+      position: relative;
+      border-radius: 1rem;
+      overflow: hidden;
+      cursor: pointer;
+      display: block;
+      transition: transform 0.4s var(--ease-spring), box-shadow 0.4s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,169,74,0.08);
+    }
+
+    .masonry-item:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.6), 0 0 30px rgba(139,58,122,0.25);
+    }
+
+    .masonry-item img {
+      width: 100%;
+      display: block;
+      border-radius: 1rem;
+      transition: transform 0.5s var(--ease-cosmic);
+    }
+
+    .masonry-item:hover img { transform: scale(1.04); }
+
+    .masonry-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(3,2,10,0.85) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.2rem;
+      border-radius: 1rem;
+    }
+
+    .masonry-item:hover .masonry-overlay { opacity: 1; }
+
+    .masonry-overlay .caption {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--ivory);
+      font-size: 0.9rem;
+    }
+
+    .masonry-overlay .expand-icon {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      width: 2rem; height: 2rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.9rem;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Polaroid section */
+    .polaroid-row {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 2rem 0;
+    }
+
+    .polaroid-wrap {
+      display: inline-block;
+    }
+
+    .polaroid-wrap:nth-child(1) { transform: rotate(-3deg); }
+    .polaroid-wrap:nth-child(2) { transform: rotate(2deg) translateY(-10px); }
+    .polaroid-wrap:nth-child(3) { transform: rotate(-1.5deg) translateY(5px); }
+    .polaroid-wrap:nth-child(4) { transform: rotate(4deg) translateY(-5px); }
+    .polaroid-wrap:nth-child(5) { transform: rotate(-2deg); }
+
+    .polaroid-wrap:hover {
+      transform: rotate(0deg) scale(1.08) translateY(-10px) !important;
+      z-index: 10;
+    }
+
+    .polaroid-wrap { transition: transform 0.4s var(--ease-spring); }
+
+    /* Favourite counter */
+    .fav-btn {
+      position: absolute;
+      top: 0.8rem; left: 0.8rem;
+      background: rgba(3,2,10,0.6);
+      border: none;
+      border-radius: 2rem;
+      padding: 0.3rem 0.7rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      backdrop-filter: blur(4px);
+      z-index: 3;
+    }
+
+    .fav-btn.active { color: var(--rose-soft); }
+    .fav-btn:hover { color: var(--rose-soft); transform: scale(1.1); }
+
+    @media (max-width: 600px) { .masonry-grid { columns: 2 140px; column-gap: 0.8rem; } }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button class="lightbox-close">✕</button>
+  <button class="lightbox-prev">‹</button>
+  <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-next">›</button>
+  <div class="lightbox-caption"></div>
+</div>
+
+<div id="toast"></div>
+
+<div class="page-wrapper">
+  <section class="museum-hero">
+    <div style="position:relative;z-index:2;">
+      <p class="section-eyebrow" style="justify-content:center;">Our Memory Museum</p>
+      <h1 class="reveal" style="font-family:var(--font-serif); font-size:clamp(2.5rem,7vw,5rem); font-weight:900; margin-bottom:1rem;">
+        Beautiful <span class="text-gold">Memories</span>
+      </h1>
+      <p class="section-subtitle reveal" style="margin:0 auto; max-width:50ch;">
+        Every photograph is a window into a moment we shared. Browse our gallery and relive every beautiful memory.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Photos</button>
+        <button class="filter-btn" data-filter="couple">Us Together</button>
+        <button class="filter-btn" data-filter="solo">Just Sayali</button>
+        <button class="filter-btn" data-filter="nature">Adventures</button>
+        <button class="filter-btn" data-filter="celebration">Celebrations</button>
+      </div>
+
+      <!-- Masonry Gallery -->
+      <div class="masonry-grid" id="gallery-grid">
+        <!-- Items injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Polaroid Section -->
+  <section class="section" style="background:linear-gradient(180deg,transparent,rgba(14,11,46,0.4),transparent); overflow:hidden;">
+    <div class="container">
+      <p class="section-eyebrow" style="justify-content:center;">Favorites</p>
+      <h2 class="section-title reveal" style="text-align:center; margin-bottom:3rem;">
+        <span class="text-rose">Polaroid</span> Moments
+      </h2>
+      <div class="polaroid-row" id="polaroid-row">
+        <!-- Polaroids injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center; padding-bottom:6rem;">
+    <div style="display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap;">
+      <a href="gifts.html" class="btn-cosmic"><span>Open Your Gifts 🎁</span></a>
+      <a href="our-story.html" class="btn-ghost">Our Story 💫</a>
+    </div>
+  </section>
+
+  <footer class="cosmic-footer">
+    <p>Made with <span class="heart">❤️</span> by Your Husband — Every memory, a treasure.</p>
+  </footer>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+const photos = [
+  { src: 'assets/images/sayali-star-queen.jpg',         caption: 'My star queen ✨', cat: 'solo', tall: true },
+  { src: 'assets/images/sayali-couple-yellow-love.jpg', caption: 'Sunshine together 💛', cat: 'couple' },
+  { src: 'assets/images/sayali-couple-embrace.jpg',     caption: 'Always together 🤍', cat: 'couple' },
+  { src: 'assets/images/sayali-couple-arms-around.jpg', caption: 'Close & cosy 💕', cat: 'couple' },
+  { src: 'assets/images/sayali-couple-happylife.jpg',   caption: 'Happy days 🌸', cat: 'couple', tall: false },
+  { src: 'assets/images/sayali-couple-nature-portrait.jpg', caption: 'In the green 🌿', cat: 'nature' },
+  { src: 'assets/images/sayali-couple-nature-full.jpg', caption: 'A walk to remember 🌳', cat: 'nature' },
+  { src: 'assets/images/sayali-kiss-cheek.jpg',         caption: 'A little kiss 😘', cat: 'couple' },
+  { src: 'assets/images/husband-kiss-sayali.jpg',       caption: 'Forever yours 💋', cat: 'couple' },
+  { src: 'assets/images/sayali-solo-black-dress.jpg',   caption: 'Absolutely radiant ✨', cat: 'solo', tall: true },
+  { src: 'assets/images/sayali-solo-garden-pose.jpg',   caption: 'My beautiful bebe 🌸', cat: 'solo', tall: true },
+  { src: 'assets/images/sayali-solo-pout-trail.jpg',    caption: 'Carefree & gorgeous 🌟', cat: 'solo', tall: true },
+  { src: 'assets/images/sayali-playful-poke.jpg',       caption: 'Playful love 😄', cat: 'celebration' },
+  { src: 'assets/images/sayali-sweet-duo.jpg',          caption: 'Sweet duo 💞', cat: 'couple' },
+];
+
+let currentFilter = 'all';
+
+function buildGallery(filter) {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = '';
+  const filtered = filter === 'all' ? photos : photos.filter(p => p.cat === filter);
+  const srcs = filtered.map(p => p.src);
+
+  filtered.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'masonry-item reveal';
+    item.setAttribute('data-cat', p.cat);
+    item.style.animationDelay = (i * 0.06) + 's';
+    item.innerHTML = `
+      <button class="fav-btn" title="Favourite" onclick="toggleFav(this, event)">♡</button>
+      <img src="${p.src}" alt="${p.caption}" loading="lazy">
+      <div class="masonry-overlay">
+        <span class="caption">${p.caption}</span>
+        <span class="expand-icon">⤢</span>
+      </div>
+    `;
+    item.addEventListener('click', () => openLightbox(srcs, i));
+    grid.appendChild(item);
+  });
+
+  // Re-observe new elements
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+function toggleFav(btn, e) {
+  e.stopPropagation();
+  btn.classList.toggle('active');
+  btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+  if (btn.classList.contains('active')) showToast('Added to favorites ♥');
+}
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    buildGallery(currentFilter);
+  });
+});
+
+buildGallery('all');
+
+// Polaroids
+const polaroidData = [
+  { src: 'assets/images/sayali-couple-happylife.jpg',   cap: 'Our happy life 🌸' },
+  { src: 'assets/images/sayali-couple-yellow-love.jpg', cap: 'Golden memories 💛' },
+  { src: 'assets/images/sayali-kiss-cheek.jpg',         cap: 'Sweetest moment 😘' },
+  { src: 'assets/images/sayali-star-queen.jpg',         cap: 'My star ✨' },
+  { src: 'assets/images/sayali-solo-black-dress.jpg',   cap: 'Simply gorgeous 🖤' },
+];
+
+const polRow = document.getElementById('polaroid-row');
+polaroidData.forEach((p, i) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'polaroid-wrap';
+  const pol = document.createElement('div');
+  pol.className = 'polaroid';
+  pol.style.width = '160px';
+  pol.onclick = () => openLightbox(polaroidData.map(x=>x.src), i);
+  pol.innerHTML = `
+    <img src="${p.src}" alt="${p.cap}" style="width:100%;height:180px;object-fit:cover;">
+    <div class="caption" style="font-family:var(--font-script);font-size:0.9rem;color:#444;margin-top:0.6rem;">${p.cap}</div>
+  `;
+  wrap.appendChild(pol);
+  polRow.appendChild(wrap);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Story — Sayali's Universe</title>
+  <meta name="description" content="Our beautiful journey together — a cinematic timeline of love and memories.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .story-hero {
+      min-height: 55vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .story-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(42,26,110,0.55) 0%, transparent 65%);
+    }
+
+    .story-hero-content { position: relative; z-index: 2; }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(212,169,74,0.4), rgba(232,121,160,0.4), transparent);
+      transform: translateX(-50%);
+    }
+
+    @media (max-width: 700px) {
+      .timeline::before { left: 1.8rem; }
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 0;
+      margin-bottom: 5rem;
+      align-items: start;
+    }
+
+    .timeline-item:nth-child(even) .tl-content { order: 3; text-align: left; }
+    .timeline-item:nth-child(even) .tl-visual  { order: 1; }
+
+    @media (max-width: 700px) {
+      .timeline-item {
+        grid-template-columns: 60px 1fr;
+        margin-bottom: 3rem;
+      }
+      .timeline-item .tl-content { order: 2 !important; text-align: left !important; }
+      .timeline-item .tl-visual  { order: 2 !important; grid-column: 2; }
+      .timeline-item .tl-center  { order: 1; }
+    }
+
+    .tl-content {
+      padding: 0 2rem;
+    }
+
+    .tl-content:first-child { text-align: right; }
+
+    .tl-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .tl-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--grad-gold);
+      border: 3px solid var(--cosmos-deep);
+      box-shadow: 0 0 20px rgba(212,169,74,0.6), 0 0 40px rgba(212,169,74,0.3);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tl-dot::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(212,169,74,0.3);
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    .tl-date {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--champagne);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tl-card {
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .tl-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--ivory);
+    }
+
+    .tl-card p {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .tl-photo {
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 30px rgba(139,58,122,0.2);
+      border: 1px solid rgba(212,169,74,0.15);
+    }
+
+    .tl-photo img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s var(--ease-cosmic);
+    }
+
+    .tl-photo:hover img { transform: scale(1.05); }
+
+    /* Special Moments section */
+    .moments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .moment-card {
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.4s var(--ease-spring);
+    }
+
+    .moment-card:hover { transform: translateY(-8px); }
+
+    .moment-icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 10px rgba(232,121,160,0.4));
+    }
+
+    .moment-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      margin-bottom: 0.6rem;
+      color: var(--ivory);
+    }
+
+    .moment-card p {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    /* Dreams section */
+    .dreams-section {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dreams-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(42,26,110,0.4) 0%, transparent 70%);
+    }
+
+    .dreams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .dream-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.3rem 1.5rem;
+    }
+
+    .dream-item .dream-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+    .dream-item p {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="toast"></div>
+
+<div class="page-wrapper">
+  <!-- Hero -->
+  <section class="story-hero">
+    <div class="story-hero-content">
+      <p class="section-eyebrow" style="justify-content:center;">Chapter One</p>
+      <h1 class="hero-title reveal">Our <span class="text-gold">Story</span></h1>
+      <p class="section-subtitle reveal" style="margin:1rem auto 0; max-width:50ch;">
+        Every great love story has a beginning, a thousand beautiful middle chapters, and a future still waiting to be written. This is ours.
+      </p>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section">
+    <div class="timeline">
+
+      <!-- Item 1 -->
+      <div class="timeline-item reveal">
+        <div class="tl-content">
+          <div class="tl-card glass-card">
+            <h3>The Beginning 🌅</h3>
+            <p>Every universe has a moment when everything changed. Ours began when you walked into my life and made the whole world feel brighter. I knew from that first moment that you were someone extraordinary.</p>
+          </div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot"></div>
+          <div class="tl-date">Our Beginning</div>
+        </div>
+        <div class="tl-visual">
+          <div class="tl-photo">
+            <img src="assets/images/sayali-couple-embrace.jpg" alt="Our Beginning">
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="timeline-item reveal">
+        <div class="tl-visual">
+          <div class="tl-photo">
+            <img src="assets/images/sayali-couple-arms-around.jpg" alt="Growing Together">
+          </div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot" style="background:var(--grad-rose);box-shadow:0 0 20px rgba(232,121,160,0.6);"></div>
+          <div class="tl-date">Growing Together</div>
+        </div>
+        <div class="tl-content">
+          <div class="tl-card glass-card">
+            <h3>Growing Closer 💕</h3>
+            <p>Day by day, conversation by conversation, we discovered each other. Every moment with you felt like a new page in a story I never wanted to end. You made ordinary moments feel extraordinary.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="timeline-item reveal">
+        <div class="tl-content">
+          <div class="tl-card glass-card">
+            <h3>Adventures Together 🌿</h3>
+            <p>Side by side, we explored the world around us. From quiet trails to beautiful places, every adventure was more beautiful because you were there. Your smile against every backdrop is my favorite photograph.</p>
+          </div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot" style="background:var(--grad-nebula);"></div>
+          <div class="tl-date">Adventures</div>
+        </div>
+        <div class="tl-visual">
+          <div class="tl-photo">
+            <img src="assets/images/sayali-couple-nature-portrait.jpg" alt="Our Adventures">
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="timeline-item reveal">
+        <div class="tl-visual">
+          <div class="tl-photo">
+            <img src="assets/images/sayali-couple-yellow-love.jpg" alt="Celebrations">
+          </div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot" style="background:var(--grad-gold);"></div>
+          <div class="tl-date">Celebrations</div>
+        </div>
+        <div class="tl-content">
+          <div class="tl-card glass-card">
+            <h3>Celebrating Together 🌟</h3>
+            <p>Every festival, every special occasion, every ordinary Tuesday became a celebration because we were together. You make every moment feel like it deserves to be remembered forever.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="timeline-item reveal">
+        <div class="tl-content">
+          <div class="tl-card glass-card">
+            <h3>The Journey Continues 💛</h3>
+            <p>Our story is still being written, one beautiful day at a time. Each morning with you is a new page, each sunset together is a perfect chapter ending, and every night I fall asleep grateful you're mine.</p>
+          </div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot" style="background:var(--grad-rose);"></div>
+          <div class="tl-date">Today & Beyond</div>
+        </div>
+        <div class="tl-visual">
+          <div class="tl-photo">
+            <img src="assets/images/sayali-couple-happylife.jpg" alt="Our Journey">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Little Things -->
+  <section class="section" style="background: linear-gradient(180deg, transparent, rgba(14,11,46,0.5), transparent);">
+    <div class="container">
+      <p class="section-eyebrow" style="justify-content:center;">The Little Things</p>
+      <h2 class="section-title reveal" style="text-align:center; margin-bottom:3rem;">
+        What Makes <span class="text-rose">Our Story</span> Special
+      </h2>
+      <div class="moments-grid">
+        <div class="moment-card glass-card reveal" style="animation-delay:0.1s">
+          <span class="moment-icon">😊</span>
+          <h3>Your Smile</h3>
+          <p>The way you smile when you're genuinely happy — it's the most beautiful thing I've ever seen.</p>
+        </div>
+        <div class="moment-card glass-card reveal" style="animation-delay:0.2s">
+          <span class="moment-icon">🌙</span>
+          <h3>Late Night Talks</h3>
+          <p>The conversations that go on long past midnight, when the world is quiet and it's just us.</p>
+        </div>
+        <div class="moment-card glass-card reveal" style="animation-delay:0.3s">
+          <span class="moment-icon">✨</span>
+          <h3>Your Strength</h3>
+          <p>The quiet courage you carry every day, facing everything with grace and dignity.</p>
+        </div>
+        <div class="moment-card glass-card reveal" style="animation-delay:0.4s">
+          <span class="moment-icon">🌸</span>
+          <h3>Your Kindness</h3>
+          <p>The way you care for others, always thinking of people before yourself.</p>
+        </div>
+        <div class="moment-card glass-card reveal" style="animation-delay:0.5s">
+          <span class="moment-icon">🎵</span>
+          <h3>Shared Moments</h3>
+          <p>Every song, every laugh, every quiet moment that belongs only to us.</p>
+        </div>
+        <div class="moment-card glass-card reveal" style="animation-delay:0.6s">
+          <span class="moment-icon">💫</span>
+          <h3>Simply You</h3>
+          <p>Everything about you — the way you are, simply and completely yourself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dreams For The Future -->
+  <section class="section dreams-section">
+    <div class="container" style="position:relative;z-index:1;">
+      <p class="section-eyebrow" style="justify-content:center;">Looking Forward</p>
+      <h2 class="section-title reveal" style="text-align:center; margin-bottom:3rem;">
+        Our <span class="text-gold">Dreams</span> Together
+      </h2>
+      <div class="dreams-grid">
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.1s">
+          <span class="dream-icon">✈️</span>
+          <p>Travel to places we've always dreamed of, making memories at every horizon.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.2s">
+          <span class="dream-icon">🏡</span>
+          <p>Build a home filled with laughter, warmth, and love — our own little universe.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.3s">
+          <span class="dream-icon">🌅</span>
+          <p>Watch a thousand more sunsets together, each one better than the last.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.4s">
+          <span class="dream-icon">🌟</span>
+          <p>Grow old together, still laughing at the same things, still choosing each other every day.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.5s">
+          <span class="dream-icon">💃</span>
+          <p>Dance together under the stars on a night that belongs only to us.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.6s">
+          <span class="dream-icon">📸</span>
+          <p>Fill thousands more albums with photographs of our beautiful life together.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.7s">
+          <span class="dream-icon">🎂</span>
+          <p>Celebrate every birthday, anniversary, and ordinary Wednesday with the same joy.</p>
+        </div>
+        <div class="dream-item glass-card-gold reveal" style="animation-delay:0.8s">
+          <span class="dream-icon">∞</span>
+          <p>A love that never stops growing, never stops surprising, never stops being magical.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="text-align:center; padding-bottom: 6rem;">
+    <p class="section-eyebrow" style="justify-content:center; margin-bottom:2rem;">Continue Exploring</p>
+    <div style="display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap;">
+      <a href="memories.html" class="btn-cosmic"><span>Our Memories 🖼️</span></a>
+      <a href="gifts.html" class="btn-gold">Open Your Gifts 🎁</a>
+      <a href="forever.html" class="btn-ghost">Grand Finale 🌌</a>
+    </div>
+  </section>
+
+  <footer class="cosmic-footer">
+    <p>Made with <span class="heart">❤️</span> by Your Husband — Every word written with love.</p>
+  </footer>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forever — Sayali's Grand Finale ✨</title>
+  <meta name="description" content="The grand finale — a cinematic celebration of Sayali, our love, and our beautiful future.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { overflow-x: hidden; }
+
+    /* Full-screen cinematic canvas */
+    #finale-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Cinematic overlay for message sequence */
+    #cinematic-finale {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(3,2,10,0.85);
+      transition: opacity 1.5s ease;
+    }
+
+    #cinematic-finale.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .finale-msg {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      padding: 0 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1.4s ease, transform 1.4s ease;
+      pointer-events: none;
+    }
+
+    .finale-msg.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .finale-msg.gone {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+
+    .finale-msg-1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.1rem, 2.8vw, 2rem);
+      font-style: italic;
+      color: rgba(248,240,227,0.8);
+      letter-spacing: 0.04em;
+    }
+
+    .finale-msg-2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 8vw, 7rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #d4a94a, #f0c53b, #e8c87e, #f4a7c0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .finale-msg-3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2.5vw, 1.6rem);
+      font-style: italic;
+      color: rgba(248,240,227,0.75);
+      max-width: 60ch;
+      line-height: 1.8;
+    }
+
+    .finale-msg-4 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.2rem, 3vw, 2.2rem);
+      color: rgba(248,240,227,0.8);
+      max-width: 60ch;
+    }
+
+    /* Heart formed from stars */
+    #heart-finale-svg {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+
+    /* Main finale content — shown after cinema */
+    .finale-content {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+    }
+
+    /* Featured photo reveal */
+    .featured-photo {
+      width: 100%;
+      max-width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .featured-photo img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      opacity: 0;
+      transition: opacity 2s ease;
+      filter: brightness(0.6) saturate(1.2);
+    }
+
+    .featured-photo img.show { opacity: 1; }
+
+    .featured-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(3,2,10,0.9) 0%, rgba(3,2,10,0.3) 40%, transparent 70%),
+        radial-gradient(ellipse at center, transparent 40%, rgba(3,2,10,0.2) 100%);
+    }
+
+    .featured-text {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 0 2rem 5rem;
+      width: 100%;
+    }
+
+    .featured-tagline {
+      font-family: var(--font-script);
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: var(--champagne);
+      margin-bottom: 0.5rem;
+    }
+
+    .featured-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 7vw, 6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+
+    .featured-subtitle {
+      font-family: var(--font-elegant);
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-style: italic;
+      color: rgba(248,240,227,0.8);
+      max-width: 60ch;
+      margin: 0 auto 2.5rem;
+      line-height: 1.9;
+    }
+
+    /* Scroll-through messages */
+    .scroll-message {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--section-pad) 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .scroll-message-content {
+      max-width: 700px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .big-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 1.5rem;
+    }
+
+    .big-quote-sub {
+      font-family: var(--font-elegant);
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-style: italic;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    /* Photo collage section */
+    .collage-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 180px);
+      gap: 4px;
+    }
+
+    .collage-item {
+      overflow: hidden;
+      border-radius: 4px;
+      transition: filter 0.4s;
+    }
+
+    .collage-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease-cosmic);
+    }
+
+    .collage-item:hover img { transform: scale(1.08); }
+    .collage-item:hover { filter: brightness(1.1); }
+
+    .collage-item.large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    @media (max-width: 700px) {
+      .collage-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(5, 160px);
+      }
+      .collage-item.large { grid-column: span 1; grid-row: span 1; }
+    }
+
+    /* Final ending text */
+    .ending-section {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem;
+      position: relative;
+    }
+
+    .ending-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(42,26,110,0.5) 0%, transparent 70%);
+    }
+
+    .ending-quote {
+      font-family: var(--font-elegant);
+      font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+      font-style: italic;
+      color: var(--text-dim);
+      max-width: 60ch;
+      line-height: 1.9;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .ending-hearts {
+      font-size: 3rem;
+      animation: heartBeat 2s infinite;
+      display: block;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .replay-section {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Confetti pieces */
+    .confetti-piece {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9000;
+      border-radius: 2px;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<canvas id="finale-canvas"></canvas>
+
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="toast"></div>
+
+<!-- Cinematic Intro Sequence -->
+<div id="cinematic-finale" aria-live="polite">
+  <div class="finale-msg finale-msg-1" id="fm-1">
+    "Out of all the stars in the universe…"
+  </div>
+  <div class="finale-msg finale-msg-2" id="fm-2">
+    Sayali 🌟
+  </div>
+  <div class="finale-msg finale-msg-3" id="fm-3">
+    "I am grateful for the day you came into this world."
+  </div>
+  <div class="finale-msg finale-msg-4" id="fm-4">
+    "Happy Birthday, My Prettiest Bebe."
+  </div>
+</div>
+
+<!-- Heart SVG -->
+<svg id="heart-finale-svg" width="320" height="300" viewBox="0 0 320 300">
+  <defs>
+    <filter id="gf2">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g stroke="rgba(212,169,74,0.2)" stroke-width="1" fill="none">
+    <path d="M160,90 L120,55 L80,65 L55,100 L65,145 L110,190 L160,245 L210,190 L255,145 L265,100 L240,65 L200,55 Z"/>
+  </g>
+  <g id="heart-dots" filter="url(#gf2)">
+    <circle cx="160" cy="90"  r="4"   fill="#e8c87e"/>
+    <circle cx="120" cy="55"  r="3"   fill="#f4a7c0"/>
+    <circle cx="80"  cy="65"  r="2.5" fill="#e8c87e"/>
+    <circle cx="55"  cy="100" r="3.5" fill="#fff"/>
+    <circle cx="65"  cy="145" r="3"   fill="#f4a7c0"/>
+    <circle cx="110" cy="190" r="2.5" fill="#e8c87e"/>
+    <circle cx="160" cy="245" r="5"   fill="#e879a0"/>
+    <circle cx="210" cy="190" r="2.5" fill="#e8c87e"/>
+    <circle cx="255" cy="145" r="3"   fill="#f4a7c0"/>
+    <circle cx="265" cy="100" r="3.5" fill="#fff"/>
+    <circle cx="240" cy="65"  r="2.5" fill="#e8c87e"/>
+    <circle cx="200" cy="55"  r="3"   fill="#f4a7c0"/>
+  </g>
+</svg>
+
+<!-- MAIN FINALE CONTENT -->
+<div class="finale-content" id="finale-content" style="display:none; opacity:0; transition:opacity 1.5s ease;">
+
+  <!-- Featured Photo Section -->
+  <div class="featured-photo" id="featured-photo">
+    <img src="assets/images/sayali-solo-black-dress.jpg" alt="Sayali — My Beautiful Star" id="featured-img">
+    <div class="featured-photo-overlay"></div>
+    <div class="featured-text">
+      <p class="featured-tagline reveal">Happy Birthday ✨</p>
+      <h1 class="featured-title reveal">
+        <span class="text-gold">Happy Birthday,</span><br>
+        <span class="text-rose">Sayali</span>
+      </h1>
+      <p class="featured-subtitle reveal">
+        "My Prettiest Bebe, I made this little universe to celebrate you, our memories, and the beautiful moments still waiting for us."
+      </p>
+      <div class="reveal" style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="birthday.html" class="btn-gold">Return to Birthday Home 🌸</a>
+        <button class="btn-ghost" onclick="replayFinale()">Replay Finale 🌌</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message 1 -->
+  <div class="scroll-message">
+    <div class="scroll-message-content">
+      <div class="orb orb-violet" style="width:300px;height:300px;left:-150px;top:50%;transform:translateY(-50%);"></div>
+      <div class="orb orb-pink" style="width:200px;height:200px;right:-100px;top:30%;"></div>
+      <p class="section-eyebrow" style="justify-content:center;">A Message From My Heart</p>
+      <p class="big-quote reveal text-gold">
+        "Out of all the stars in the universe, I am grateful for the day you came into this world."
+      </p>
+      <p class="big-quote-sub reveal">
+        Every moment since then has been more beautiful. Every day with you is proof that the universe knows exactly what it's doing.
+      </p>
+    </div>
+  </div>
+
+  <!-- Photo Collage -->
+  <section class="section" style="padding:0;">
+    <div class="collage-grid">
+      <div class="collage-item large">
+        <img src="assets/images/sayali-couple-yellow-love.jpg" alt="Memory">
+      </div>
+      <div class="collage-item">
+        <img src="assets/images/sayali-solo-black-dress.jpg" alt="Memory">
+      </div>
+      <div class="collage-item">
+        <img src="assets/images/sayali-couple-embrace.jpg" alt="Memory">
+      </div>
+      <div class="collage-item">
+        <img src="assets/images/sayali-kiss-cheek.jpg" alt="Memory">
+      </div>
+      <div class="collage-item">
+        <img src="assets/images/sayali-couple-arms-around.jpg" alt="Memory">
+      </div>
+      <div class="collage-item large">
+        <img src="assets/images/sayali-star-queen.jpg" alt="Memory">
+      </div>
+      <div class="collage-item">
+        <img src="assets/images/sayali-couple-nature-portrait.jpg" alt="Memory">
+      </div>
+      <div class="collage-item">
+        <img src="assets/images/husband-kiss-sayali.jpg" alt="Memory">
+      </div>
+    </div>
+  </section>
+
+  <!-- Message 2 -->
+  <div class="scroll-message" style="background:linear-gradient(180deg,transparent,rgba(14,11,46,0.5),transparent);">
+    <div class="scroll-message-content">
+      <p class="big-quote reveal text-rose">
+        "One birthday. So many beautiful memories. And a whole future of moments waiting to be made."
+      </p>
+      <p class="big-quote-sub reveal" style="margin-top:1.5rem;">
+        I cannot wait to live every single one of those moments with you by my side.
+      </p>
+    </div>
+  </div>
+
+  <!-- Ending Section -->
+  <div class="ending-section">
+    <p class="ending-quote reveal">
+      "To Sayali — who makes this universe more beautiful simply by existing in it. Who makes me more myself simply by loving me. Who is, without question, my very favorite person in all the stars."
+    </p>
+    <span class="ending-hearts reveal">❤️</span>
+    <div class="ending-quote reveal" style="font-family:var(--font-script);font-size:clamp(1.3rem,3vw,2rem);color:var(--champagne);">
+      Happy Birthday, My Prettiest Bebe.<br>
+      — Your Husband, Forever.
+    </div>
+    <div class="replay-section reveal" style="margin-top:3rem;">
+      <button class="btn-cosmic" onclick="replayFinale()"><span>↺ Replay Our Journey</span></button>
+      <a href="birthday.html" class="btn-gold">Return to Birthday Home 🌸</a>
+      <button class="btn-ghost" onclick="launchCelebration()">Celebrate! 🎉</button>
+    </div>
+  </div>
+
+  <footer class="cosmic-footer">
+    <p>
+      Made with <span class="heart">❤️</span> by Your Husband<br>
+      <em style="opacity:0.6;font-size:0.85rem;">"Every star in this universe shines a little brighter because you exist."</em>
+    </p>
+  </footer>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  /* ---- Cinematic Finale Sequence ---- */
+  const finaleContent = document.getElementById('finale-content');
+  const cinematicFinale = document.getElementById('cinematic-finale');
+
+  function showFM(id) {
+    document.getElementById(id).classList.add('visible');
+  }
+  function hideFM(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('visible');
+    el.classList.add('gone');
+  }
+
+  // Heart glow animation
+  function revealFinaleHeart() {
+    const svg = document.getElementById('heart-finale-svg');
+    svg.style.opacity = '1';
+    const dots = svg.querySelectorAll('circle');
+    dots.forEach((d, i) => setTimeout(() => {
+      d.style.transition = 'opacity 0.5s, r 0.5s';
+      d.style.opacity = '1';
+    }, i * 150));
+    setTimeout(() => { svg.style.opacity = '0'; }, 5000);
+  }
+
+  // Sequence
+  setTimeout(() => showFM('fm-1'), 800);
+  setTimeout(() => hideFM('fm-1'), 3500);
+  setTimeout(() => showFM('fm-2'), 4200);
+  setTimeout(() => revealFinaleHeart(), 4800);
+  setTimeout(() => hideFM('fm-2'), 7000);
+  setTimeout(() => showFM('fm-3'), 7600);
+  setTimeout(() => hideFM('fm-3'), 11000);
+  setTimeout(() => showFM('fm-4'), 11600);
+  setTimeout(() => {
+    hideFM('fm-4');
+    launchPetals();
+  }, 15000);
+  setTimeout(() => {
+    cinematicFinale.classList.add('hidden');
+    finaleContent.style.display = 'block';
+    setTimeout(() => {
+      finaleContent.style.opacity = '1';
+      document.getElementById('featured-img').classList.add('show');
+      launchConfetti();
+    }, 100);
+  }, 16500);
+
+  // ---- Confetti ----
+  function launchConfetti() {
+    const colors = ['#e879a0', '#d4a94a', '#f4a7c0', '#e8c87e', '#ffffff', '#9b59b6'];
+    for (let i = 0; i < 80; i++) {
+      setTimeout(() => {
+        const piece = document.createElement('div');
+        const size = 6 + Math.random() * 8;
+        piece.className = 'confetti-piece';
+        piece.style.cssText = `
+          left:${Math.random()*100}vw;
+          top:-20px;
+          width:${size}px;
+          height:${size * (0.5 + Math.random())}px;
+          background:${colors[Math.floor(Math.random()*colors.length)]};
+          animation-duration:${3+Math.random()*4}s;
+          animation-delay:${Math.random()*2}s;
+        `;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 8000);
+      }, i * 60);
+    }
+    launchPetals();
+  }
+
+  function launchCelebration() {
+    launchConfetti();
+    showToast('🎉 Happy Birthday Sayali! 🎉', 5000);
+  }
+
+  function replayFinale() {
+    cinematicFinale.style.opacity = '';
+    cinematicFinale.classList.remove('hidden');
+    finaleContent.style.opacity = '0';
+    document.getElementById('featured-img').classList.remove('show');
+
+    // Reset messages
+    document.querySelectorAll('.finale-msg').forEach(m => {
+      m.classList.remove('visible', 'gone');
+    });
+
+    setTimeout(() => {
+      finaleContent.style.display = 'none';
+      // Re-run sequence
+      setTimeout(() => showFM('fm-1'), 800);
+      setTimeout(() => hideFM('fm-1'), 3500);
+      setTimeout(() => showFM('fm-2'), 4200);
+      setTimeout(() => revealFinaleHeart(), 4800);
+      setTimeout(() => hideFM('fm-2'), 7000);
+      setTimeout(() => showFM('fm-3'), 7600);
+      setTimeout(() => hideFM('fm-3'), 11000);
+      setTimeout(() => showFM('fm-4'), 11600);
+      setTimeout(() => { hideFM('fm-4'); launchPetals(); }, 15000);
+      setTimeout(() => {
+        cinematicFinale.classList.add('hidden');
+        finaleContent.style.display = 'block';
+        setTimeout(() => {
+          finaleContent.style.opacity = '1';
+          document.getElementById('featured-img').classList.add('show');
+          launchConfetti();
+        }, 100);
+      }, 16500);
+    }, 500);
+  }
+
+  // ---- Finale canvas: golden particles ----
+  const fc = document.getElementById('finale-canvas');
+  const fctx = fc.getContext('2d');
+  let fW, fH, fParticles = [];
+
+  function resizeFC() {
+    fW = fc.width  = window.innerWidth;
+    fH = fc.height = window.innerHeight;
+  }
+  resizeFC();
+  window.addEventListener('resize', resizeFC, { passive: true });
+
+  function spawnGoldenParticle() {
+    fParticles.push({
+      x: Math.random() * fW,
+      y: fH + 10,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: -(0.5 + Math.random() * 1.5),
+      r: 1 + Math.random() * 2.5,
+      alpha: 0.8 + Math.random() * 0.2,
+      color: Math.random() < 0.6 ? '#d4a94a' : '#f4a7c0',
+    });
+  }
+
+  let fpFrame = 0;
+  function animateFC() {
+    fctx.clearRect(0, 0, fW, fH);
+    fpFrame++;
+    if (fpFrame % 4 === 0) spawnGoldenParticle();
+
+    fParticles = fParticles.filter(p => p.y > -20 && p.alpha > 0.01);
+    fParticles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha *= 0.995;
+      fctx.save();
+      fctx.globalAlpha = p.alpha;
+      fctx.fillStyle = p.color;
+      fctx.shadowBlur = 8;
+      fctx.shadowColor = p.color;
+      fctx.beginPath();
+      fctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      fctx.fill();
+      fctx.restore();
+    });
+    requestAnimationFrame(animateFC);
+  }
+  animateFC();
+</script>
+</body>
+</html>

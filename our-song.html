@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Song — Sayali's Universe</title>
+  <meta name="description" content="Our song — a cinematic music experience made for Sayali.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .song-hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .song-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(42,26,110,0.7) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 50% at 20% 70%, rgba(139,58,122,0.25) 0%, transparent 55%);
+    }
+
+    .song-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 800px) {
+      .song-content { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
+    }
+
+    /* Album art */
+    .album-art-wrap {
+      position: relative;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    .album-art {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid rgba(212,169,74,0.3);
+      box-shadow:
+        0 0 0 1px rgba(212,169,74,0.15),
+        0 0 0 20px rgba(14,11,46,0.5),
+        0 0 0 22px rgba(212,169,74,0.1),
+        0 24px 80px rgba(0,0,0,0.6),
+        0 0 80px rgba(139,58,122,0.35);
+      transition: transform 0.3s;
+    }
+
+    .album-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .album-art.spinning {
+      animation: spin 20s linear infinite;
+    }
+
+    .album-art.paused { animation-play-state: paused; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Center dot */
+    .album-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 40px;
+      background: var(--cosmos-deep);
+      border-radius: 50%;
+      border: 2px solid rgba(212,169,74,0.4);
+      z-index: 2;
+    }
+
+    /* Needle arm */
+    .needle {
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 80px; height: 120px;
+      transform-origin: top right;
+      transform: rotate(-25deg);
+      transition: transform 0.8s var(--ease-cosmic);
+    }
+
+    .needle.playing { transform: rotate(-15deg); }
+
+    .needle-arm {
+      width: 3px;
+      height: 80px;
+      background: linear-gradient(to bottom, var(--champagne), rgba(212,169,74,0.3));
+      border-radius: 2px;
+      position: absolute;
+      top: 20px; right: 8px;
+      transform-origin: top center;
+    }
+
+    .needle-head {
+      width: 10px; height: 10px;
+      background: var(--champagne);
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Equalizer bars */
+    .equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 50px;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    .eq-bar {
+      width: 6px;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(to top, var(--nebula-violet), var(--rose-soft));
+      animation: eqBounce 0.8s ease-in-out infinite alternate;
+    }
+
+    .eq-bar.paused { animation-play-state: paused; }
+
+    @keyframes eqBounce {
+      from { height: 4px; }
+      to   { height: var(--max-h, 40px); }
+    }
+
+    /* Player UI */
+    .player-wrap {
+      background: rgba(14,11,46,0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(212,169,74,0.2);
+      border-radius: 2rem;
+      padding: 2rem;
+    }
+
+    .song-info { margin-bottom: 1.5rem; }
+
+    .song-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 0.3rem;
+    }
+
+    .song-artist {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      position: relative;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin: 1.5rem 0 0.5rem;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--nebula-violet), var(--rose-soft));
+      border-radius: 3px;
+      transition: width 0.5s linear;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -6px; top: 50%;
+      transform: translateY(-50%);
+      width: 14px; height: 14px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255,255,255,0.5);
+      display: none;
+    }
+
+    .progress-wrap:hover .progress-fill::after { display: block; }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    /* Controls */
+    .player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.3s;
+      width: 2.8rem; height: 2.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:hover { color: var(--champagne); background: rgba(255,255,255,0.08); }
+
+    .ctrl-play {
+      width: 4rem; height: 4rem;
+      background: var(--grad-nebula);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(139,58,122,0.4);
+    }
+
+    .ctrl-play:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 30px rgba(139,58,122,0.6);
+    }
+
+    /* Volume */
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .volume-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      background: var(--champagne);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Setup message */
+    .music-setup {
+      background: rgba(212,169,74,0.08);
+      border: 1px solid rgba(212,169,74,0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .music-setup h4 {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      color: var(--champagne);
+      margin-bottom: 0.5rem;
+    }
+
+    .music-setup p {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .music-setup code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: var(--champagne);
+    }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="toast"></div>
+
+<audio id="audio-player" preload="none"></audio>
+
+<div class="page-wrapper">
+  <section class="song-hero">
+    <div class="song-bg"></div>
+    <div class="song-content">
+
+      <!-- Album Art -->
+      <div class="album-art-wrap reveal-scale">
+        <div class="album-art" id="album-disc">
+          <img src="assets/images/sayali-couple-yellow-love.jpg" alt="Our Song">
+        </div>
+        <div class="album-center"></div>
+        <div class="needle" id="needle">
+          <div class="needle-arm"></div>
+        </div>
+      </div>
+
+      <!-- Player -->
+      <div class="song-text">
+        <p class="section-eyebrow">Our Song</p>
+        <h1 class="reveal" style="font-family:var(--font-serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:900;margin-bottom:0.5rem;line-height:1.1;">
+          The Melody That <span class="text-gold">Belongs to Us</span>
+        </h1>
+        <p class="section-subtitle reveal" style="margin-bottom:2rem;">
+          Every time this song plays, I think of you. Of us. Of all the beautiful moments we've shared and all the ones still to come.
+        </p>
+
+        <!-- Equalizer -->
+        <div class="equalizer" id="equalizer">
+          <!-- Bars injected by JS -->
+        </div>
+
+        <div class="player-wrap reveal">
+          <div class="song-info">
+            <div class="song-title" id="song-title">Our Song</div>
+            <div class="song-artist" id="song-artist">Add your song to assets/audio/our-song.mp3</div>
+          </div>
+
+          <!-- Progress -->
+          <div class="progress-wrap" id="progress-wrap">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="time-row">
+            <span id="time-current">0:00</span>
+            <span id="time-total">0:00</span>
+          </div>
+
+          <!-- Controls -->
+          <div class="player-controls">
+            <button class="ctrl-btn" id="btn-prev" title="Previous" onclick="prevTrack()">⏮</button>
+            <button class="ctrl-play" id="btn-play" onclick="togglePlay()">▶</button>
+            <button class="ctrl-btn" id="btn-next" title="Next" onclick="nextTrack()">⏭</button>
+            <button class="ctrl-btn" id="btn-mute" onclick="toggleMute()" title="Mute">🔊</button>
+          </div>
+
+          <!-- Volume -->
+          <div class="volume-row">
+            <span style="font-size:0.85rem;">🎵</span>
+            <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)">
+          </div>
+
+          <!-- Setup Instructions -->
+          <div class="music-setup" id="music-setup">
+            <h4>🎵 Add Your Song</h4>
+            <p>
+              To play your special song, place your music file in:<br>
+              <code>assets/audio/our-song.mp3</code><br><br>
+              Supported formats: .mp3, .ogg, .wav, .m4a<br><br>
+              Then update the song title and artist below in <code>our-song.html</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center; padding-bottom:6rem;">
+    <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;">
+      <a href="wishes.html" class="btn-cosmic"><span>Wishing Galaxy 🌟</span></a>
+      <a href="letter.html" class="btn-ghost">Love Letter 💌</a>
+    </div>
+  </section>
+
+  <footer class="cosmic-footer">
+    <p>Made with <span class="heart">❤️</span> by Your Husband — Our song plays on forever.</p>
+  </footer>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // ---- Song Configuration ----
+  // EDIT THESE:
+  const SONG_FILE   = 'assets/audio/our-song.mp3'; // path to your music file
+  const SONG_TITLE  = 'Our Song';                   // song name
+  const SONG_ARTIST = 'For Sayali, with love ❤️';   // artist/subtitle
+
+  // ---- Player State ----
+  const audio = document.getElementById('audio-player');
+  let isPlaying = false;
+  let isMuted = false;
+
+  // Try to load the song
+  audio.src = SONG_FILE;
+  document.getElementById('song-title').textContent  = SONG_TITLE;
+  document.getElementById('song-artist').textContent = SONG_ARTIST;
+
+  audio.addEventListener('canplay', () => {
+    document.getElementById('music-setup').style.display = 'none';
+    document.getElementById('song-artist').textContent = SONG_ARTIST;
+  });
+
+  audio.addEventListener('timeupdate', updateProgress);
+  audio.addEventListener('loadedmetadata', () => {
+    document.getElementById('time-total').textContent = formatTime(audio.duration);
+  });
+
+  audio.addEventListener('ended', () => {
+    isPlaying = false;
+    document.getElementById('btn-play').textContent = '▶';
+    document.getElementById('album-disc').classList.remove('spinning');
+    document.getElementById('album-disc').classList.add('paused');
+    document.getElementById('needle').classList.remove('playing');
+    eqPause();
+  });
+
+  function togglePlay() {
+    if (!audio.src) return showToast('Please add your song file first 🎵');
+    if (isPlaying) {
+      audio.pause();
+      isPlaying = false;
+      document.getElementById('btn-play').textContent = '▶';
+      document.getElementById('album-disc').classList.add('paused');
+      document.getElementById('needle').classList.remove('playing');
+      eqPause();
+    } else {
+      audio.play().then(() => {
+        isPlaying = true;
+        document.getElementById('btn-play').textContent = '⏸';
+        document.getElementById('album-disc').classList.add('spinning');
+        document.getElementById('album-disc').classList.remove('paused');
+        document.getElementById('needle').classList.add('playing');
+        eqPlay();
+      }).catch(() => {
+        showToast('Add your music file to assets/audio/our-song.mp3 🎵');
+      });
+    }
+  }
+
+  function toggleMute() {
+    isMuted = !isMuted;
+    audio.muted = isMuted;
+    document.getElementById('btn-mute').textContent = isMuted ? '🔇' : '🔊';
+  }
+
+  function setVolume(v) {
+    audio.volume = parseFloat(v);
+    isMuted = false;
+    audio.muted = false;
+    document.getElementById('btn-mute').textContent = '🔊';
+  }
+
+  function prevTrack() {
+    audio.currentTime = Math.max(0, audio.currentTime - 10);
+  }
+
+  function nextTrack() {
+    audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+  }
+
+  // Progress bar click
+  document.getElementById('progress-wrap').addEventListener('click', function(e) {
+    if (!audio.duration) return;
+    const rect = this.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  });
+
+  function updateProgress() {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('time-current').textContent = formatTime(audio.currentTime);
+  }
+
+  function formatTime(s) {
+    if (isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  // Equalizer bars
+  const eq = document.getElementById('equalizer');
+  const barHeights = [20, 35, 50, 42, 28, 45, 38, 55, 32, 48, 22, 40, 35, 50, 28];
+  barHeights.forEach((h, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'eq-bar paused';
+    bar.style.cssText = `--max-h:${h}px; animation-delay:${i*0.07}s; animation-duration:${0.5+Math.random()*0.6}s;`;
+    bar.style.height = '4px';
+    eq.appendChild(bar);
+  });
+
+  function eqPlay()  { eq.querySelectorAll('.eq-bar').forEach(b => b.classList.remove('paused')); }
+  function eqPause() { eq.querySelectorAll('.eq-bar').forEach(b => b.classList.add('paused')); }
+</script>
+</body>
+</html>

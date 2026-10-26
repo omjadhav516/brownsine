@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Love Letter — Sayali's Universe</title>
+  <meta name="description" content="A heartfelt letter written from my heart, for you — My Prettiest Bebe.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { background: #05030f; }
+
+    .letter-hero {
+      min-height: 40vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 2rem;
+      position: relative;
+    }
+
+    .letter-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(139,58,122,0.25) 0%, transparent 65%);
+    }
+
+    /* Envelope opening animation */
+    .envelope-scene {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .big-envelope {
+      position: relative;
+      width: min(340px, 90vw);
+      height: 240px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .big-envelope:hover { transform: translateY(-4px); }
+
+    .envelope-back {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #2d1a5e 0%, #1a1040 60%, #0e0b2e 100%);
+      border: 1px solid rgba(212,169,74,0.3);
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,58,122,0.2);
+      position: relative;
+      overflow: visible;
+    }
+
+    /* Envelope flap */
+    .big-envelope-flap {
+      position: absolute;
+      bottom: 100%;
+      left: 0; right: 0;
+      height: 140px;
+      background: linear-gradient(160deg, #3d2280 0%, #2a1a6e 100%);
+      border: 1px solid rgba(212,169,74,0.2);
+      border-bottom: none;
+      clip-path: polygon(0 100%, 50% 0, 100% 100%);
+      transform-origin: bottom;
+      transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 5;
+    }
+
+    .big-envelope.opened .big-envelope-flap {
+      transform: rotateX(-180deg);
+    }
+
+    .envelope-wax {
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px; height: 36px;
+      background: radial-gradient(circle, #e879a0, #9b3060);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 0 15px rgba(232,121,160,0.5);
+      z-index: 6;
+      transition: all 0.5s;
+    }
+
+    .big-envelope.opened .envelope-wax {
+      transform: translateX(-50%) scale(0);
+      opacity: 0;
+    }
+
+    .envelope-letter-preview {
+      position: absolute;
+      bottom: 0; left: 10px; right: 10px;
+      height: 0;
+      background: #f8f0e3;
+      border-radius: 4px 4px 0 0;
+      overflow: hidden;
+      transition: height 0.9s cubic-bezier(0.23, 1, 0.32, 1) 0.3s;
+      display: flex;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+
+    .big-envelope.opened .envelope-letter-preview {
+      height: 120px;
+    }
+
+    .envelope-letter-preview p {
+      font-family: 'Dancing Script', cursive;
+      font-size: 0.85rem;
+      color: #3a2a1a;
+      line-height: 1.6;
+    }
+
+    .open-letter-btn {
+      margin-top: 1rem;
+      opacity: 0;
+      transition: opacity 0.5s ease 1.5s;
+    }
+
+    .big-envelope.opened ~ .open-letter-btn { opacity: 1; }
+
+    /* Letter paper */
+    .letter-paper {
+      max-width: 680px;
+      margin: 0 auto;
+      background: linear-gradient(160deg, #fef9f2, #f8f0e3, #fdf5eb);
+      border-radius: 2px;
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(2rem, 6vw, 4.5rem);
+      box-shadow:
+        0 0 0 1px rgba(212,169,74,0.2),
+        0 30px 80px rgba(0,0,0,0.6),
+        inset 0 0 0 1px rgba(0,0,0,0.03);
+      position: relative;
+    }
+
+    /* Paper lines */
+    .letter-paper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent calc(2.2rem - 1px),
+        rgba(200,180,150,0.2) calc(2.2rem - 1px),
+        rgba(200,180,150,0.2) 2.2rem
+      );
+      background-size: 100% 2.2rem;
+      background-position: 0 3.8rem;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    /* Left red margin line */
+    .letter-paper::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 4.5rem; bottom: 0;
+      width: 1px;
+      background: rgba(232,121,160,0.25);
+    }
+
+    .letter-paper .letter-date {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1rem;
+      color: #7a6050;
+      text-align: right;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-paper .salutation {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.6rem;
+      color: #4a3020;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-paper .body-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 1.8vw, 1.18rem);
+      color: #3a2a1a;
+      line-height: 2.2;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-paper .sign-off {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.3rem;
+      color: #4a3020;
+      text-align: right;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-paper .signature {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #6a4030;
+      text-align: right;
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-paper .heart-stamp {
+      position: absolute;
+      top: 2rem; right: 2rem;
+      font-size: 2rem;
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .letter-highlight {
+      background: linear-gradient(120deg, rgba(232,121,160,0.15), rgba(232,121,160,0.1));
+      border-radius: 2px;
+      padding: 0 2px;
+      font-style: italic;
+    }
+
+    /* Show letter section — hidden until envelope opened */
+    #letter-section { display: none; }
+    #letter-section.show { display: block; }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="toast"></div>
+
+<div class="page-wrapper">
+  <!-- Hero -->
+  <section class="letter-hero">
+    <div style="position:relative;z-index:2;">
+      <p class="section-eyebrow" style="justify-content:center;">From My Heart</p>
+      <h1 class="reveal" style="font-family:var(--font-serif);font-size:clamp(2.5rem,7vw,5rem);font-weight:900;margin-bottom:0.5rem;">
+        A <span class="text-rose">Love Letter</span>
+      </h1>
+      <p class="section-subtitle reveal" style="margin:0 auto;max-width:46ch;">
+        Written with every feeling I carry for you — words I could never say enough.
+      </p>
+    </div>
+  </section>
+
+  <!-- Envelope -->
+  <section class="envelope-scene section" style="padding-top:0;">
+    <div class="big-envelope" id="big-envelope" onclick="openBigEnvelope()">
+      <div class="envelope-back">
+        <div class="big-envelope-flap"></div>
+        <div class="envelope-wax">💌</div>
+        <div class="envelope-letter-preview">
+          <p>My Dearest Sayali,<br>There are not enough words…</p>
+        </div>
+      </div>
+    </div>
+    <p style="font-family:var(--font-script);font-size:1.1rem;color:var(--champagne);margin-top:1.5rem;opacity:0.8;">
+      Click to open your letter ✨
+    </p>
+    <button class="btn-cosmic open-letter-btn" id="read-btn" onclick="showLetter()" style="margin-top:1rem;">
+      <span>Read My Letter →</span>
+    </button>
+  </section>
+
+  <!-- Letter Paper -->
+  <section class="section" id="letter-section" style="padding-top:0;">
+    <div class="container">
+      <div class="letter-paper reveal-scale">
+        <div class="heart-stamp">❤️</div>
+        <div class="letter-date">21st October 2026</div>
+        <div class="salutation">My Dearest Sayali,</div>
+
+        <p class="body-text">
+          There are not enough words in any language to tell you how much you mean to me. I have looked for the right ones for a long time now — in poems, in songs, in the quiet moments just before sleep — and I always come back to the same truth: that no arrangement of letters could ever capture <span class="letter-highlight">what you are to me</span>.
+        </p>
+
+        <p class="body-text">
+          You are the person who makes ordinary mornings feel like gifts. The one who can fill a room with light simply by walking into it. The one whose laugh — that genuine, unguarded laugh — is quite possibly the most beautiful sound in my world. I don't deserve to hear it every day, but I am so grateful that I do.
+        </p>
+
+        <p class="body-text">
+          I have watched you carry yourself through every kind of day with a grace that takes my breath away. Through the hard ones, you are still kind. Through the uncertain ones, you are still brave. Through the ordinary ones, you still find little ways to make everything feel lighter. <span class="letter-highlight">That is who you are</span> — and it is extraordinary.
+        </p>
+
+        <p class="body-text">
+          Thank you for choosing me. For every morning you smiled at me, for every quiet evening we shared, for every time you held my hand without me asking. For every memory in this little universe I built for you tonight — you deserve to know that each one of them is precious to me, and that the best ones are still ahead of us.
+        </p>
+
+        <p class="body-text">
+          My wish for you today and every day is simple: that you feel as loved as you truly are. That you see yourself the way I see you — radiant, strong, endlessly beautiful, and so very worthy of every wonderful thing this world has to offer.
+        </p>
+
+        <p class="body-text">
+          Happy birthday, <span class="letter-highlight">my prettiest bebe</span>. I am so grateful you were born into this world. I am so grateful our paths found each other. And I am so deeply, endlessly grateful for the beautiful future still waiting for us.
+        </p>
+
+        <div class="sign-off">
+          With all my love, every single star in this universe,<br>and every tomorrow we have left,
+        </div>
+        <div class="signature">Your Husband ❤️</div>
+      </div>
+
+      <!-- Photo below -->
+      <div class="reveal" style="text-align:center;margin-top:3rem;">
+        <div style="display:inline-block;max-width:320px;">
+          <div class="photo-frame photo-frame-gold">
+            <img src="assets/images/sayali-couple-arms-around.jpg" alt="Us together" style="width:100%;height:380px;object-fit:cover;">
+          </div>
+          <p style="font-family:var(--font-script);font-size:1.1rem;color:var(--champagne);margin-top:1rem;">Always yours 💛</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center;padding-bottom:6rem;">
+    <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;">
+      <a href="our-song.html" class="btn-cosmic"><span>Our Song 🎵</span></a>
+      <a href="forever.html" class="btn-gold">Grand Finale 🌌</a>
+      <a href="gifts.html" class="btn-ghost">Back to Gifts 🎁</a>
+    </div>
+  </section>
+
+  <footer class="cosmic-footer">
+    <p>Made with <span class="heart">❤️</span> by Your Husband — Every word, the truth.</p>
+  </footer>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  let envelopeOpened = false;
+
+  function openBigEnvelope() {
+    if (envelopeOpened) return;
+    envelopeOpened = true;
+    document.getElementById('big-envelope').classList.add('opened');
+    launchPetals();
+    setTimeout(() => {
+      document.getElementById('read-btn').style.opacity = '1';
+    }, 1500);
+  }
+
+  function showLetter() {
+    const letterSection = document.getElementById('letter-section');
+    letterSection.classList.add('show');
+    letterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('💌 Reading your letter with love…', 3000);
+  }
+</script>
+</body>
+</html>

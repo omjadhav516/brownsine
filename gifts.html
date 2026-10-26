@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magical Gift Room — Sayali's Universe</title>
+  <meta name="description" content="Six magical gifts waiting to be opened — just for you, Sayali.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .gifts-hero {
+      min-height: 40vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 2rem;
+      position: relative;
+    }
+
+    .gifts-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(42,26,110,0.5) 0%, transparent 65%);
+    }
+
+    /* Gift Room */
+    .gift-room {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 4vw, 3rem);
+    }
+
+    @media (max-width: 680px) {
+      .gift-room { grid-template-columns: 1fr; }
+    }
+
+    /* Gift Card */
+    .gift-card {
+      position: relative;
+      border-radius: 1.8rem;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.4s var(--ease-spring), box-shadow 0.4s;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .gift-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,58,122,0.25);
+    }
+
+    .gift-card.opened {
+      animation: glowPulse 2s ease-in-out;
+    }
+
+    .gift-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px rgba(232,121,160,0.5));
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .gift-card:hover .gift-icon { transform: scale(1.15) rotate(5deg); }
+
+    .gift-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--ivory);
+    }
+
+    .gift-card p {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .gift-btn {
+      padding: 0.6rem 1.6rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(212,169,74,0.3);
+      background: rgba(212,169,74,0.1);
+      color: var(--champagne);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .gift-btn:hover {
+      background: rgba(212,169,74,0.25);
+      border-color: var(--champagne);
+    }
+
+    .gift-opened-badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(232,121,160,0.2);
+      border: 1px solid rgba(232,121,160,0.4);
+      color: var(--rose-soft);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2rem;
+      display: none;
+    }
+
+    .gift-card.opened .gift-opened-badge { display: block; }
+
+    /* Open All button */
+    .open-all-btn {
+      display: block;
+      margin: 2rem auto;
+      padding: 1rem 2.5rem;
+    }
+
+    /* Modal contents */
+    .modal-gift-icon { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
+    .modal-gift-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      background: var(--grad-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Envelope animation */
+    .envelope-wrap {
+      position: relative;
+      width: 140px;
+      height: 100px;
+      margin: 0 auto 2rem;
+      cursor: pointer;
+    }
+
+    .envelope-body {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #2a1a6e, #1a1040);
+      border: 1px solid rgba(212,169,74,0.3);
+      border-radius: 0 0 8px 8px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 0.5rem;
+      overflow: hidden;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 55px;
+      background: linear-gradient(135deg, #4a2c8a, #2a1a6e);
+      border-bottom: 1px solid rgba(212,169,74,0.2);
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      transform-origin: top;
+      transition: transform 0.6s var(--ease-cosmic);
+    }
+
+    .envelope-wrap.open .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope-heart {
+      font-size: 1.5rem;
+      animation: heartBeat 2s infinite;
+    }
+
+    /* Reasons cards */
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+    }
+
+    .reason-card {
+      background: rgba(74,44,138,0.2);
+      border: 1px solid rgba(232,200,126,0.15);
+      border-radius: 0.8rem;
+      padding: 1rem;
+      font-family: var(--font-elegant);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      text-align: center;
+      transition: all 0.3s var(--ease-spring);
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .reason-card.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .reason-card:hover {
+      background: rgba(74,44,138,0.4);
+      border-color: rgba(232,200,126,0.3);
+      color: var(--ivory);
+    }
+
+    /* Wish jar */
+    .wish-jar-display {
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(74,44,138,0.2);
+      border: 1px solid rgba(232,121,160,0.2);
+      border-radius: 1rem;
+      margin: 1rem 0;
+      font-family: var(--font-elegant);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--ivory);
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Memory box photos */
+    .memory-box-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+
+    .memory-box-grid img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .memory-box-grid img:hover { transform: scale(1.05); }
+
+    /* Coupon */
+    .coupon {
+      background: linear-gradient(135deg, rgba(212,169,74,0.1), rgba(232,121,160,0.1));
+      border: 2px dashed rgba(212,169,74,0.3);
+      border-radius: 1rem;
+      padding: 1.2rem 1.5rem;
+      margin: 0.8rem 0;
+      text-align: center;
+      font-family: var(--font-serif);
+      color: var(--ivory);
+      font-size: 0.95rem;
+      position: relative;
+    }
+
+    .coupon::before, .coupon::after {
+      content: '✂';
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      color: var(--champagne);
+      opacity: 0.4;
+      font-size: 1.2rem;
+    }
+
+    .coupon::before { left: -0.8rem; }
+    .coupon::after  { right: -0.8rem; }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="lightbox">
+  <button class="lightbox-close">✕</button>
+  <button class="lightbox-prev">‹</button>
+  <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-next">›</button>
+</div>
+<div id="toast"></div>
+
+<!-- Gift Modals -->
+<div class="modal-overlay" id="modal-letter">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-letter')">✕</button>
+    <div class="modal-gift-icon">💌</div>
+    <div class="modal-gift-title">A Letter From My Heart</div>
+    <div class="envelope-wrap" id="envelope" onclick="openEnvelope()">
+      <div class="envelope-body">
+        <div class="envelope-flap"></div>
+        <div class="envelope-heart">💌</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-family:var(--font-elegant);font-style:italic;color:var(--text-dim);font-size:0.85rem;">Click the envelope to open it…</p>
+    <div id="letter-preview" style="display:none;margin-top:1.5rem;">
+      <p style="font-family:var(--font-elegant);font-style:italic;line-height:1.9;color:var(--ivory);">
+        My Dearest Sayali,<br><br>
+        There are not enough words in any language to describe what you mean to me. You are my sunrise and my evening star, my laughter and my peace…
+        <br><br>
+        <a href="letter.html" style="color:var(--champagne);text-decoration:none;font-family:var(--font-sans);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;">Read Full Letter →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-reasons">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-reasons')">✕</button>
+    <div class="modal-gift-icon">💖</div>
+    <div class="modal-gift-title">Reasons You Are Special</div>
+    <p style="text-align:center;font-family:var(--font-elegant);font-style:italic;color:var(--text-dim);margin-bottom:1.5rem;">Click each card to reveal a reason…</p>
+    <div class="reasons-grid" id="reasons-grid"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-memory-box">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-memory-box')">✕</button>
+    <div class="modal-gift-icon">📦</div>
+    <div class="modal-gift-title">Our Memory Box</div>
+    <p style="text-align:center;font-family:var(--font-elegant);font-style:italic;color:var(--text-dim);margin-bottom:1rem;">A treasure chest filled with our photographs</p>
+    <div class="memory-box-grid" id="memory-box-grid"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-wish-jar">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-wish-jar')">✕</button>
+    <div class="modal-gift-icon">🫙</div>
+    <div class="modal-gift-title">The Wish Jar</div>
+    <div class="wish-jar-display" id="wish-display">Click the jar to reveal a wish for you…</div>
+    <div style="text-align:center;margin-top:1rem;">
+      <button class="btn-cosmic" onclick="revealWish()"><span>✨ Shake the Jar</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-mystery">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-mystery')">✕</button>
+    <div class="modal-gift-icon" id="mystery-icon">🎁</div>
+    <div class="modal-gift-title">The Mystery Gift</div>
+    <div id="mystery-content" style="text-align:center;">
+      <button class="btn-gold" onclick="openMystery()" style="margin:1rem auto; display:block;">Unwrap Your Gift ✨</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-future">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-future')">✕</button>
+    <div class="modal-gift-icon">🌅</div>
+    <div class="modal-gift-title">Our Future Dreams</div>
+    <div id="future-dreams">
+      <!-- Coupons / dreams -->
+      <div class="coupon">✈️ One Adventure Trip Together — Redeemable Anytime</div>
+      <div class="coupon">🌙 A Surprise Date Night under the Stars — Your Choice</div>
+      <div class="coupon">📸 A Professional Photoshoot — Just the Two of Us</div>
+      <div class="coupon">🍽️ Your Favorite Meal Cooked with Love — Any Day You Ask</div>
+      <div class="coupon">💃 One Dance Together — Whenever You Want</div>
+      <div class="coupon">🎬 Movie Night of Your Choice — Blankets, Snacks, Everything</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+  <section class="gifts-hero">
+    <div style="position:relative;z-index:2;">
+      <p class="section-eyebrow" style="justify-content:center;">Just For You</p>
+      <h1 class="reveal" style="font-family:var(--font-serif);font-size:clamp(2.5rem,7vw,5rem);font-weight:900;margin-bottom:1rem;">
+        The <span class="text-gold">Gift Room</span> 🎁
+      </h1>
+      <p class="section-subtitle reveal" style="margin:0 auto;max-width:48ch;">
+        Six magical gifts, each one made with love and waiting just for you to open.
+      </p>
+    </div>
+  </section>
+
+  <!-- Open All -->
+  <div class="container" style="text-align:center; margin-bottom: 2rem;">
+    <button class="btn-gold open-all-btn" onclick="openAllGifts()">✨ Open All Gifts</button>
+  </div>
+
+  <!-- Gift Grid -->
+  <section class="section" style="padding-top:0;">
+    <div class="gift-room">
+      <div class="gift-card glass-card reveal" onclick="openModal('modal-letter')">
+        <div class="gift-opened-badge">Opened ✓</div>
+        <div class="gift-icon">💌</div>
+        <h3>A Letter From My Heart</h3>
+        <p>An animated envelope revealing a heartfelt letter written only for you</p>
+        <button class="gift-btn">Open Gift →</button>
+      </div>
+
+      <div class="gift-card glass-card-rose reveal" style="animation-delay:0.1s" onclick="openModal('modal-reasons')">
+        <div class="gift-opened-badge">Opened ✓</div>
+        <div class="gift-icon">💖</div>
+        <h3>Reasons You Are Special</h3>
+        <p>Beautiful cards revealing all the reasons you light up this universe</p>
+        <button class="gift-btn">Open Gift →</button>
+      </div>
+
+      <div class="gift-card glass-card-gold reveal" style="animation-delay:0.2s" onclick="openModal('modal-memory-box')">
+        <div class="gift-opened-badge">Opened ✓</div>
+        <div class="gift-icon">📦</div>
+        <h3>Our Memory Box</h3>
+        <p>A glowing treasure chest filled with our real photographs</p>
+        <button class="gift-btn">Open Gift →</button>
+      </div>
+
+      <div class="gift-card glass-card reveal" style="animation-delay:0.3s" onclick="openModal('modal-wish-jar')">
+        <div class="gift-opened-badge">Opened ✓</div>
+        <div class="gift-icon">🫙</div>
+        <h3>The Wish Jar</h3>
+        <p>A magical jar that reveals a beautiful birthday wish just for you</p>
+        <button class="gift-btn">Open Gift →</button>
+      </div>
+
+      <div class="gift-card glass-card-rose reveal" style="animation-delay:0.4s" onclick="openModal('modal-mystery')">
+        <div class="gift-opened-badge">Opened ✓</div>
+        <div class="gift-icon">🎁</div>
+        <h3>The Mystery Gift</h3>
+        <p>A cinematic surprise reveal — something beautiful awaits inside</p>
+        <button class="gift-btn">Open Gift →</button>
+      </div>
+
+      <div class="gift-card glass-card-gold reveal" style="animation-delay:0.5s" onclick="openModal('modal-future')">
+        <div class="gift-opened-badge">Opened ✓</div>
+        <div class="gift-icon">🌅</div>
+        <h3>Our Future Dreams</h3>
+        <p>A collection of beautiful plans and promises for our beautiful future</p>
+        <button class="gift-btn">Open Gift →</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center; padding-bottom:6rem;">
+    <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;">
+      <a href="letter.html" class="btn-cosmic"><span>Read My Full Letter 💌</span></a>
+      <a href="wishes.html" class="btn-ghost">Wishing Galaxy 🌟</a>
+    </div>
+  </section>
+
+  <footer class="cosmic-footer">
+    <p>Made with <span class="heart">❤️</span> by Your Husband — Each gift, a piece of my heart.</p>
+  </footer>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Mark card as opened
+    const card = document.querySelector(`[onclick="openModal('${id}')"]`);
+    if (card) card.classList.add('opened');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) { m.classList.remove('open'); document.body.style.overflow = ''; } });
+  });
+
+  // Envelope
+  function openEnvelope() {
+    document.getElementById('envelope').classList.add('open');
+    setTimeout(() => { document.getElementById('letter-preview').style.display = 'block'; }, 700);
+  }
+
+  // Reasons
+  const reasons = [
+    'Your smile lights up every room 😊', 'Your laugh is my favorite sound 🎵',
+    'You make me a better person 🌟', 'Your kindness knows no bounds 🌸',
+    'You are breathtakingly beautiful ✨', 'You carry strength with grace 💪',
+    'Your love is the greatest gift 💝', 'You make every moment magical 🌙',
+    'You are my favorite adventure 🌍', 'With you, home is wherever we are 🏡',
+    'You dream big and that inspires me 🌅', 'You are my best friend 💫',
+  ];
+
+  const reasonsGrid = document.getElementById('reasons-grid');
+  reasons.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'reason-card';
+    card.textContent = r;
+    card.onclick = function() {
+      this.classList.toggle('revealed');
+    };
+    reasonsGrid.appendChild(card);
+    setTimeout(() => card.classList.add('revealed'), i * 120 + 300);
+  });
+
+  // Memory box
+  const memPhotos = [
+    'assets/images/sayali-couple-embrace.jpg',
+    'assets/images/sayali-couple-yellow-love.jpg',
+    'assets/images/sayali-kiss-cheek.jpg',
+    'assets/images/sayali-solo-black-dress.jpg',
+    'assets/images/sayali-couple-happylife.jpg',
+    'assets/images/husband-kiss-sayali.jpg',
+    'assets/images/sayali-couple-nature-portrait.jpg',
+    'assets/images/sayali-playful-poke.jpg',
+    'assets/images/sayali-sweet-duo.jpg',
+  ];
+
+  const memGrid = document.getElementById('memory-box-grid');
+  memPhotos.forEach((p, i) => {
+    const img = document.createElement('img');
+    img.src = p;
+    img.alt = 'Memory ' + (i+1);
+    img.loading = 'lazy';
+    img.onclick = () => openLightbox(memPhotos, i);
+    memGrid.appendChild(img);
+  });
+
+  // Wishes
+  const wishes = [
+    '🌟 May every dream you carry in your heart come true this year.',
+    '💛 May your life always be filled with as much joy as you bring to mine.',
+    '🌸 May this birthday be the beginning of your most beautiful year yet.',
+    '✨ May you always know how deeply, completely, endlessly loved you are.',
+    '🌙 May every night end with a grateful heart and every morning begin with a smile.',
+    '💫 May happiness follow you wherever you go, today and always.',
+    '🌅 May your path always be lit by stars, and your heart always feel at home.',
+    '🎂 May this year bring you everything you deserve — which is absolutely everything beautiful.',
+  ];
+
+  let lastWishIdx = -1;
+  function revealWish() {
+    let idx;
+    do { idx = Math.floor(Math.random() * wishes.length); } while (idx === lastWishIdx);
+    lastWishIdx = idx;
+    const display = document.getElementById('wish-display');
+    display.style.opacity = '0';
+    display.style.transition = 'opacity 0.4s';
+    setTimeout(() => {
+      display.textContent = wishes[idx];
+      display.style.opacity = '1';
+    }, 400);
+    launchPetals();
+  }
+
+  // Mystery gift
+  const mysteryPhotos = ['assets/images/sayali-solo-black-dress.jpg', 'assets/images/sayali-star-queen.jpg'];
+  let mysteryOpened = false;
+  function openMystery() {
+    if (mysteryOpened) return;
+    mysteryOpened = true;
+    const content = document.getElementById('mystery-content');
+    const icon = document.getElementById('mystery-icon');
+    content.innerHTML = '<p style="font-family:var(--font-elegant);font-style:italic;color:var(--champagne);font-size:1.1rem;margin-bottom:1rem;">The universe reveals its secret…</p>';
+    icon.textContent = '✨';
+    launchPetals();
+    setTimeout(() => {
+      const img = document.createElement('img');
+      img.src = mysteryPhotos[Math.floor(Math.random() * mysteryPhotos.length)];
+      img.style.cssText = 'width:100%;max-width:300px;border-radius:1rem;display:block;margin:0 auto;box-shadow:0 0 40px rgba(139,58,122,0.4);animation:scaleIn 0.6s var(--ease-spring);';
+      content.appendChild(img);
+      const msg = document.createElement('p');
+      msg.style.cssText = 'font-family:var(--font-script);font-size:1.3rem;color:var(--champagne);text-align:center;margin-top:1rem;';
+      msg.textContent = 'The most beautiful mystery — you. ❤️';
+      content.appendChild(msg);
+    }, 800);
+  }
+
+  // Open all gifts
+  function openAllGifts() {
+    const modals = ['modal-letter','modal-reasons','modal-memory-box','modal-wish-jar','modal-mystery','modal-future'];
+    let i = 0;
+    function openNext() {
+      if (i >= modals.length) {
+        showToast('🎉 All gifts opened! Happy Birthday Sayali!', 5000);
+        launchPetals();
+        return;
+      }
+      const card = document.querySelector(`[onclick="openModal('${modals[i]}')"]`);
+      if (card) card.classList.add('opened');
+      i++;
+      setTimeout(openNext, 200);
+    }
+    openNext();
+    openModal(modals[0]);
+    openEnvelope();
+    revealWish();
+    showToast('✨ Opening all your gifts…');
+  }
+</script>
+</body>
+</html>

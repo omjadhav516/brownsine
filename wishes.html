@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishing Galaxy — Sayali's Universe</title>
+  <meta name="description" content="An interactive night sky filled with birthday wishes — tap a star for Sayali.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Full-screen interactive star field */
+    #wish-canvas {
+      position: fixed;
+      inset: 0;
+      cursor: crosshair;
+      z-index: 1;
+    }
+
+    /* Top UI */
+    .wish-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      text-align: center;
+      padding: 90px 2rem 2rem;
+      background: linear-gradient(to bottom, rgba(3,2,10,0.9) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .wish-header h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 900;
+    }
+
+    .wish-header p {
+      font-family: var(--font-elegant);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      margin-top: 0.5rem;
+    }
+
+    /* Wish popup */
+    .wish-popup {
+      position: fixed;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(14,11,46,0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(212,169,74,0.3);
+      border-radius: 1.5rem;
+      padding: 1.5rem 2.5rem;
+      max-width: min(480px, 90vw);
+      text-align: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.5s var(--ease-spring);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,58,122,0.2);
+    }
+
+    .wish-popup.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+
+    .wish-popup-star {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .wish-popup-text {
+      font-family: var(--font-elegant);
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      font-style: italic;
+      color: var(--ivory);
+      line-height: 1.7;
+    }
+
+    /* Bottom controls */
+    .wish-controls {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Write wish modal */
+    .write-wish-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(3,2,10,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+    }
+
+    .write-wish-modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .write-wish-box {
+      background: linear-gradient(135deg, #1a1040, #0e0b2e);
+      border: 1px solid rgba(212,169,74,0.25);
+      border-radius: 2rem;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 100%;
+      animation: scaleIn 0.4s var(--ease-spring);
+    }
+
+    .write-wish-box h3 {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .write-wish-box textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(212,169,74,0.2);
+      border-radius: 1rem;
+      padding: 1rem;
+      color: var(--ivory);
+      font-family: var(--font-elegant);
+      font-size: 1rem;
+      font-style: italic;
+      resize: none;
+      outline: none;
+      margin: 1rem 0;
+      line-height: 1.8;
+    }
+
+    .write-wish-box textarea:focus {
+      border-color: rgba(212,169,74,0.5);
+    }
+
+    /* Wish list */
+    .wish-list-section {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 150;
+      max-width: 220px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .wish-list-item {
+      background: rgba(14,11,46,0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(212,169,74,0.15);
+      border-radius: 1rem;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+      font-family: var(--font-elegant);
+      font-style: italic;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      animation: fadeInUp 0.5s var(--ease-spring);
+    }
+
+    /* Star counter */
+    .star-counter {
+      position: fixed;
+      top: 5rem; right: 1.5rem;
+      z-index: 150;
+      text-align: center;
+      background: rgba(14,11,46,0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(212,169,74,0.15);
+      border-radius: 1rem;
+      padding: 0.8rem 1.2rem;
+    }
+
+    .star-counter .count {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: var(--grad-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .star-counter .label {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    @media (max-width: 600px) {
+      .wish-list-section { display: none; }
+      .star-counter { right: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<canvas id="wish-canvas"></canvas>
+
+<nav class="nav-cosmic" id="navbar">
+  <a href="index.html" class="nav-logo">Sayali ✨</a>
+  <ul class="nav-links">
+    <li><a href="birthday.html">Home</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+    <li><a href="memories.html">Memories</a></li>
+    <li><a href="gifts.html">Gifts</a></li>
+    <li><a href="letter.html">Letter</a></li>
+    <li><a href="our-song.html">Our Song</a></li>
+    <li><a href="wishes.html">Wishes</a></li>
+    <li><a href="forever.html">Forever</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="birthday.html">Home</a><a href="our-story.html">Our Story</a><a href="memories.html">Memories</a>
+  <a href="gifts.html">Gifts</a><a href="letter.html">Letter</a><a href="our-song.html">Our Song</a>
+  <a href="wishes.html">Wishes</a><a href="forever.html">Forever</a>
+</nav>
+<div id="page-transition"><div class="transition-star">✨</div></div>
+<div id="toast"></div>
+
+<!-- Header -->
+<div class="wish-header">
+  <h1><span class="text-gold">Wishing Galaxy</span> 🌟</h1>
+  <p>Tap anywhere in the sky to plant a star and receive a birthday wish ✨</p>
+</div>
+
+<!-- Star Counter -->
+<div class="star-counter">
+  <div class="count" id="star-count">0</div>
+  <div class="label">Stars Planted</div>
+</div>
+
+<!-- Wish Popup -->
+<div class="wish-popup" id="wish-popup">
+  <div class="wish-popup-star">✨</div>
+  <p class="wish-popup-text" id="wish-popup-text"></p>
+</div>
+
+<!-- Wish List (sidebar) -->
+<div class="wish-list-section" id="wish-list"></div>
+
+<!-- Controls -->
+<div class="wish-controls">
+  <button class="btn-cosmic" onclick="openWriteWish()"><span>✍️ Write a Wish</span></button>
+  <button class="btn-ghost" onclick="downloadWishes()">Download Wishes 💾</button>
+  <a href="forever.html" class="btn-gold">Grand Finale 🌌</a>
+</div>
+
+<!-- Write Wish Modal -->
+<div class="write-wish-modal" id="write-wish-modal">
+  <div class="write-wish-box">
+    <h3 class="text-gold">Plant a Wish ✨</h3>
+    <p style="font-family:var(--font-elegant);font-style:italic;color:var(--text-dim);font-size:0.9rem;text-align:center;margin-bottom:0.5rem;">Write a birthday wish for Sayali</p>
+    <textarea id="wish-input" rows="4" placeholder="Dear Sayali, I wish for you…"></textarea>
+    <div style="display:flex;gap:1rem;justify-content:flex-end;">
+      <button class="btn-ghost" onclick="closeWriteWish()">Cancel</button>
+      <button class="btn-cosmic" onclick="plantCustomWish()"><span>Plant Wish 🌟</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  const WISHES = [
+    '🌟 May every dream you carry in your heart bloom into something beautiful this year.',
+    '💛 May your days always be filled with as much joy as you give to the people around you.',
+    '🌸 May this birthday be the beginning of the most magical chapter of your beautiful life.',
+    '✨ May you always know — deep in your heart — how endlessly loved and cherished you truly are.',
+    '🌙 May every night bring you peace and every morning fill you with wonder and gratitude.',
+    '💫 May happiness follow you like sunlight wherever you choose to go.',
+    '🌅 May every horizon you look towards be filled with promise and possibility.',
+    '🎂 May this year bring you everything you deserve — and you deserve everything wonderful.',
+    '💝 May your smile never fade, your spirit never dim, and your laugh always ring out loud.',
+    '🌠 May the stars always align for you, and may every wish you ever make come true.',
+    '🦋 May you discover new reasons to be amazed by this beautiful world you live in.',
+    '🌺 May your heart always feel as full of love as it fills the hearts of everyone around you.',
+  ];
+
+  let starCount = 0;
+  let wishesList = [];
+  let popupTimeout;
+
+  // ---- Wish Canvas ----
+  const wc = document.getElementById('wish-canvas');
+  const wctx = wc.getContext('2d');
+  let userStars = [];
+
+  function resizeWishCanvas() {
+    wc.width  = window.innerWidth;
+    wc.height = window.innerHeight;
+  }
+  resizeWishCanvas();
+  window.addEventListener('resize', resizeWishCanvas, { passive: true });
+
+  function drawUserStars() {
+    wctx.clearRect(0, 0, wc.width, wc.height);
+    userStars.forEach(s => {
+      s.life++;
+      s.alpha = Math.min(1, s.life / 20);
+      const pulse = 0.7 + 0.3 * Math.sin(s.life * 0.05);
+
+      wctx.save();
+      wctx.globalAlpha = s.alpha * pulse;
+      wctx.fillStyle = s.color;
+      wctx.shadowBlur = 20;
+      wctx.shadowColor = s.color;
+      wctx.beginPath();
+      wctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      wctx.fill();
+      // Draw star spikes
+      wctx.globalAlpha = s.alpha * 0.4 * pulse;
+      for (let a = 0; a < 4; a++) {
+        const angle = (a * Math.PI / 2) + s.life * 0.01;
+        wctx.beginPath();
+        wctx.moveTo(s.x, s.y);
+        wctx.lineTo(s.x + Math.cos(angle) * s.r * 3, s.y + Math.sin(angle) * s.r * 3);
+        wctx.strokeStyle = s.color;
+        wctx.lineWidth = 1;
+        wctx.stroke();
+      }
+      wctx.restore();
+    });
+    requestAnimationFrame(drawUserStars);
+  }
+  drawUserStars();
+
+  // Click to plant star
+  wc.addEventListener('click', e => {
+    plantStar(e.clientX, e.clientY);
+  });
+
+  wc.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    plantStar(t.clientX, t.clientY);
+  }, { passive: false });
+
+  function plantStar(x, y) {
+    const colors = ['#e8c87e', '#f4a7c0', '#fff', '#e879a0', '#d4a94a'];
+    userStars.push({
+      x, y,
+      r: 3 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 0,
+      alpha: 0,
+    });
+
+    starCount++;
+    document.getElementById('star-count').textContent = starCount;
+
+    const wishText = WISHES[Math.floor(Math.random() * WISHES.length)];
+    showWishPopup(wishText);
+    addToWishList(wishText);
+    wishesList.push(wishText);
+  }
+
+  function showWishPopup(text) {
+    const popup = document.getElementById('wish-popup');
+    const textEl = document.getElementById('wish-popup-text');
+    textEl.textContent = text;
+    popup.classList.add('visible');
+    clearTimeout(popupTimeout);
+    popupTimeout = setTimeout(() => popup.classList.remove('visible'), 5000);
+  }
+
+  function addToWishList(text) {
+    const list = document.getElementById('wish-list');
+    const item = document.createElement('div');
+    item.className = 'wish-list-item';
+    item.textContent = text;
+    list.insertBefore(item, list.firstChild);
+    // Keep only last 5
+    while (list.children.length > 5) list.removeChild(list.lastChild);
+  }
+
+  // Write wish modal
+  function openWriteWish() {
+    document.getElementById('write-wish-modal').classList.add('open');
+    document.getElementById('wish-input').focus();
+  }
+
+  function closeWriteWish() {
+    document.getElementById('write-wish-modal').classList.remove('open');
+    document.getElementById('wish-input').value = '';
+  }
+
+  function plantCustomWish() {
+    const text = document.getElementById('wish-input').value.trim();
+    if (!text) return;
+    const w = `💫 ${text}`;
+    wishesList.push(w);
+    showWishPopup(w);
+    addToWishList(w);
+    // Plant a star in center
+    plantStar(window.innerWidth / 2 + (Math.random() - 0.5) * 200, window.innerHeight / 2 + (Math.random() - 0.5) * 200);
+    closeWriteWish();
+    showToast('🌟 Your wish has been planted in the stars!');
+  }
+
+  document.getElementById('write-wish-modal').addEventListener('click', e => {
+    if (e.target.id === 'write-wish-modal') closeWriteWish();
+  });
+
+  // Download wishes
+  function downloadWishes() {
+    if (!wishesList.length) { showToast('Plant some stars first! 🌟'); return; }
+    const content = `BIRTHDAY WISHES FOR SAYALI ✨\nWritten on the stars — ${new Date().toLocaleDateString()}\n\n` +
+      wishesList.map((w, i) => `${i + 1}. ${w}`).join('\n\n');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Sayali-Birthday-Wishes.txt';
+    a.click();
+    showToast('💾 Wishes saved! Keep them always.');
+  }
+
+  // Pre-load some constellation wishes
+  setTimeout(() => {
+    const preloaded = [WISHES[0], WISHES[3], WISHES[5]];
+    preloaded.forEach((w, i) => {
+      setTimeout(() => {
+        const x = window.innerWidth * (0.2 + i * 0.3) + (Math.random() - 0.5) * 100;
+        const y = window.innerHeight * (0.3 + Math.random() * 0.3);
+        userStars.push({ x, y, r: 2 + Math.random() * 2, color: '#e8c87e', life: 0, alpha: 0 });
+      }, i * 800);
+    });
+  }, 1500);
+</script>
+</body>
+</html>

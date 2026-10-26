@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sayali — A Universe Made For You ✨</title>
+  <meta name="description" content="A private universe built from love, memories, light, and magic — made specifically for Sayali, My Prettiest Bebe.">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { overflow: hidden; }
+
+    .intro-wrapper {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    /* Galaxy portal effect */
+    .galaxy-portal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .galaxy-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      animation: ringExpand linear infinite;
+    }
+
+    @keyframes ringExpand {
+      0%   { transform: scale(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: scale(3) rotate(180deg); opacity: 0; }
+    }
+
+    /* Cinematic text messages */
+    .cinematic-message {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      padding: 0 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+      pointer-events: none;
+    }
+
+    .cinematic-message.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cinematic-message.hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .msg-1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.2rem, 3vw, 2rem); font-style: italic; color: rgba(248,240,227,0.7); letter-spacing: 0.05em; }
+    .msg-2 { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.5vw, 1.8rem); color: rgba(248,240,227,0.75); }
+    .msg-3 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 8vw, 7rem); font-weight: 900; letter-spacing: -0.01em; }
+    .msg-4 { font-family: 'Dancing Script', cursive; font-size: clamp(1.4rem, 3.5vw, 2.8rem); color: rgba(248,240,227,0.8); }
+
+    /* Enter button */
+    .enter-section {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      padding-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1.2s ease;
+      z-index: 20;
+    }
+
+    .enter-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn-enter {
+      position: relative;
+      padding: 1.2rem 3.5rem;
+      background: transparent;
+      border: 2px solid rgba(212,169,74,0.5);
+      border-radius: 4rem;
+      color: var(--champagne);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.5s var(--ease-cosmic);
+    }
+
+    .btn-enter::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--grad-gold);
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .btn-enter:hover {
+      border-color: var(--gold-bright);
+      color: var(--cosmos-black);
+      box-shadow: 0 0 60px rgba(212,169,74,0.5), 0 0 120px rgba(212,169,74,0.2);
+      transform: scale(1.04);
+    }
+
+    .btn-enter:hover::before { opacity: 1; }
+    .btn-enter span { position: relative; z-index: 1; }
+
+    /* Glow pulsing ring around enter button */
+    .btn-enter-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .btn-enter-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 4rem;
+      border: 1px solid rgba(212,169,74,0.25);
+      animation: glowPulse 2.5s ease-in-out infinite;
+    }
+
+    .skip-btn {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(248,240,227,0.35);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.3s;
+      text-decoration: none;
+    }
+
+    .skip-btn:hover { color: rgba(248,240,227,0.7); }
+
+    /* Heart constellation */
+    .heart-svg {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+
+    .heart-svg.visible { opacity: 1; }
+
+    /* Galaxy zoom out */
+    @keyframes galaxyZoom {
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(25); opacity: 0; }
+    }
+
+    .galaxy-zoom {
+      animation: galaxyZoom 1s var(--ease-cosmic) forwards !important;
+    }
+
+    /* Nebula background */
+    .nebula-bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(42,26,110,0.5) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 40% at 20% 80%, rgba(139,58,122,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 25% 35% at 80% 20%, rgba(74,44,138,0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Floating dust particles */
+    .dust-particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Stars Background -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- Nebula -->
+<div class="nebula-bg"></div>
+
+<!-- Page Transition -->
+<div id="page-transition"><div class="transition-star">✨</div></div>
+
+<!-- Heart Constellation SVG -->
+<svg class="heart-svg" id="heart-constellation" width="300" height="280" viewBox="0 0 300 280">
+  <defs>
+    <filter id="glow-filter">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Constellation lines -->
+  <g id="const-lines" stroke="rgba(212,169,74,0.25)" stroke-width="1" fill="none">
+    <path d="M150,80 L110,50 L70,60 L50,90 L60,130 L100,170 L150,220 L200,170 L240,130 L250,90 L230,60 L190,50 Z"/>
+  </g>
+  <!-- Star dots on the heart -->
+  <g id="const-stars" filter="url(#glow-filter)">
+    <circle cx="150" cy="80"  r="3" fill="#e8c87e" opacity="0"/>
+    <circle cx="110" cy="50"  r="2.5" fill="#f4a7c0" opacity="0"/>
+    <circle cx="70"  cy="60"  r="2"   fill="#e8c87e" opacity="0"/>
+    <circle cx="50"  cy="90"  r="3"   fill="#fff" opacity="0"/>
+    <circle cx="60"  cy="130" r="2.5" fill="#f4a7c0" opacity="0"/>
+    <circle cx="100" cy="170" r="2"   fill="#e8c87e" opacity="0"/>
+    <circle cx="150" cy="220" r="4"   fill="#e879a0" opacity="0"/>
+    <circle cx="200" cy="170" r="2"   fill="#e8c87e" opacity="0"/>
+    <circle cx="240" cy="130" r="2.5" fill="#f4a7c0" opacity="0"/>
+    <circle cx="250" cy="90"  r="3"   fill="#fff" opacity="0"/>
+    <circle cx="230" cy="60"  r="2"   fill="#e8c87e" opacity="0"/>
+    <circle cx="190" cy="50"  r="2.5" fill="#f4a7c0" opacity="0"/>
+  </g>
+</svg>
+
+<!-- Cinematic Messages -->
+<div class="intro-wrapper" id="intro-wrapper">
+  <div class="cinematic-message msg-1" id="msg-1">
+    "Somewhere in this endless universe…"
+  </div>
+  <div class="cinematic-message msg-2" id="msg-2">
+    "There's one person who makes my world beautiful."
+  </div>
+  <div class="cinematic-message msg-3 text-gold" id="msg-3">
+    Sayali ✨
+  </div>
+  <div class="cinematic-message msg-4" id="msg-4">
+    "A little universe, made just for you."
+  </div>
+</div>
+
+<!-- Enter Section -->
+<div class="enter-section" id="enter-section">
+  <div class="btn-enter-wrap">
+    <button class="btn-enter" id="enter-btn" onclick="enterUniverse()">
+      <span>✦ Enter Your Birthday Universe ✦</span>
+    </button>
+  </div>
+  <button class="skip-btn" onclick="enterUniverse()">Skip Intro</button>
+</div>
+
+<!-- Skip Intro (top-right, always visible) -->
+<button id="skip-top" onclick="enterUniverse()" style="position:fixed;top:1.5rem;right:1.5rem;z-index:100;background:none;border:1px solid rgba(248,240,227,0.2);color:rgba(248,240,227,0.4);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.1rem;border-radius:2rem;cursor:pointer;transition:all 0.3s;font-family:var(--font-sans)" onmouseover="this.style.color='rgba(248,240,227,0.8)'" onmouseout="this.style.color='rgba(248,240,227,0.4)'">Skip</button>
+
+<script src="js/main.js"></script>
+<script>
+  /* ---- Cinematic Intro Sequence ---- */
+  const msgs = ['msg-1','msg-2','msg-3','msg-4'];
+  let seq = 0;
+  let introActive = true;
+
+  function showMsg(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('visible');
+  }
+
+  function hideMsg(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('visible');
+    el.classList.add('hidden');
+  }
+
+  // Spawn golden dust particles
+  function spawnDust() {
+    for (let i = 0; i < 40; i++) {
+      setTimeout(() => {
+        const d = document.createElement('div');
+        const size = 2 + Math.random() * 4;
+        d.className = 'dust-particle';
+        d.style.cssText = `
+          width:${size}px; height:${size}px;
+          left:${20 + Math.random()*60}vw; top:${20 + Math.random()*60}vh;
+          background:rgba(${Math.random()<0.5?'212,169,74':'232,200,126'},${0.4+Math.random()*0.5});
+          animation: floatUp ${5+Math.random()*5}s linear forwards;
+          animation-delay:${Math.random()*3}s;
+        `;
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 10000);
+      }, i * 80);
+    }
+  }
+
+  // Reveal heart constellation stars
+  function revealConstellation() {
+    document.getElementById('heart-constellation').classList.add('visible');
+    const constStars = document.querySelectorAll('#const-stars circle');
+    constStars.forEach((s, i) => {
+      setTimeout(() => {
+        s.style.transition = 'opacity 0.6s ease';
+        s.style.opacity = '1';
+      }, i * 120);
+    });
+  }
+
+  // Sequence
+  setTimeout(() => { if (!introActive) return; showMsg('msg-1'); }, 1200);
+  setTimeout(() => { if (!introActive) return; hideMsg('msg-1'); }, 3800);
+  setTimeout(() => { if (!introActive) return; showMsg('msg-2'); }, 4400);
+  setTimeout(() => { if (!introActive) return; hideMsg('msg-2'); }, 7000);
+  setTimeout(() => { if (!introActive) return; showMsg('msg-3'); spawnDust(); }, 7600);
+  setTimeout(() => { if (!introActive) return; revealConstellation(); }, 8500);
+  setTimeout(() => { if (!introActive) return; hideMsg('msg-3'); }, 10000);
+  setTimeout(() => { if (!introActive) return; showMsg('msg-4'); }, 10600);
+  setTimeout(() => { if (!introActive) return; hideMsg('msg-4'); }, 13200);
+  setTimeout(() => {
+    if (!introActive) return;
+    document.getElementById('heart-constellation').style.opacity = '0';
+    const enterSection = document.getElementById('enter-section');
+    enterSection.classList.add('visible');
+    document.body.style.overflow = '';
+  }, 13800);
+
+  function enterUniverse() {
+    introActive = false;
+    // Zoom to birthday page
+    const overlay = document.getElementById('page-transition');
+    overlay.classList.add('active');
+    setTimeout(() => { window.location.href = 'birthday.html'; }, 700);
+  }
+</script>
+</body>
+</html>
